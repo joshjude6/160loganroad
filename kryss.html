@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Krysseregler</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>1603, 160 Logan Road</h1> 
+    <div class="topnav">
+        <a href="index.html">Hjem</a>
+        <a href="vaskeregler.html">Vaskeregler</a>
+        <a href="kryss.html">Kryss</a>
+        <a href="bingo.html">Bingo</a>
+        <a href="sitater.html">Sitater</a>
+        <a href="lardom.html">Australsk lærdom</a>
+        <a href="guide.html">Skal du flytte hit?</a>
+        <a href="admin.html">Admin</a>
+    </div>
+    <h2>Melding av kryss</h2>
+    <p>Reglene for kryss er TBA!</p>
+    <div class="input-bar">
+        <select id="inputName">
+            <option value="" disabled selected>Hvem meldes?</option>
+            <option value="Peter">Peter</option>
+            <option value="Josh">Josh</option>
+            <option value="Philip">Philip</option>
+        </select>
+        <input type="text" id="hvorfor" placeholder="Hvorfor?">
+        <input type="number" id="antallKryss" min="1" max="10" placeholder="Antall kryss?">
+        <select id="hvemMeldte" placeholder="Fra hvem?">
+            <option value="" disabled selected>Hvem meldte?</option>
+            <option value="Peter">Peter</option>
+            <option value="Josh">Josh</option>
+            <option value="Philip">Philip</option>
+        </select>
+        <button id="submitBtn">Submit</button>
+    </div>
+
+    <div id="chartContainer">
+        <canvas id="myChart"></canvas>
+    </div>
+
+    <table id="entriesTable">
+        <thead>
+            <tr>
+                <th>Hvem meldes på?</th>
+                <th>Hvorfor?</th>
+                <th>Antall kryss?</th>
+                <th>Hvem meldte?</th>
+            </tr>
+        </thead>
+        <tbody id="entriesTableBody">
+        </tbody>
+    </table>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="/scripts/kryss.js"></script>
+</html>

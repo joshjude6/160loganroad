@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>1603, 160 Logan Road</h1> 
+    <div class="topnav">
+        <a href="index.html">Hjem</a>
+        <a href="vaskeregler.html">Vaskeregler</a>
+        <a href="kryss.html">Kryss</a>
+        <a href="bingo.html">Bingo</a>
+        <a href="sitater.html">Sitater</a>
+        <a href="lardom.html">Australsk lærdom</a>
+        <a href="guide.html">Skal du flytte hit?</a>
+        <a href="admin.html">Admin</a>
+    </div>
+    <h2>Resette kryss og nullstille tabell?</h2>
+    <div class="input-bar">
+        <button id="resetBtn" onclick="resetTableAndChart()">Nullstill hele tabellen</button>
+    </div>
+    <div id="entriesList">
+        <!-- List of entries with remove buttons will be populated dynamically -->
+    </div>
+    <script src="/scripts/reset.js"></script>
+    <script src="/scripts/remove.js"></script>
+    <script>
+        function resetTableAndChart() {
+            const iframe = document.getElementById('kryssFrame');
+            if (iframe) {
+                iframe.contentWindow.postMessage({ action: 'reset' }, '*');
+            }
+        }
+    </script>
+</body>
+</html>
