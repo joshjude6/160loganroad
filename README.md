@@ -1,0 +1,1 @@
+Webpage for me and my roommates' apartment while on exchange in Brisbane, Australia. Contains cleaning lists and other organizing features to ensure a smooth experience living together. A work in progress!
