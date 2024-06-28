@@ -1,8 +1,11 @@
+// kryss.js
+import { db } from './firebase.js';
+import { ref, get, set, push, onValue } from "firebase/database";
+
 document.addEventListener('DOMContentLoaded', function() {
     const entriesTableBody = document.getElementById('entriesTableBody');
     const ctx = document.getElementById('myChart').getContext('2d');
 
-    // Initialize chart data with default labels and empty data
     let chartData = {
         labels: ['Peter', 'Josh', 'Philip'],
         datasets: [{
@@ -14,7 +17,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }]
     };
 
-    // Initialize Chart.js instance
     let myChart = new Chart(ctx, {
         type: 'bar',
         data: chartData,
@@ -27,21 +29,24 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Retrieve entries from Local Storage
-    let entries = JSON.parse(localStorage.getItem('entries')) || [];
+    const entriesRef = ref(db, 'entries');
 
-    // Populate table and update chart with existing entries
-    entries.forEach(entry => {
-        updateTableAndChart(entry.name, entry.reason, entry.kryss, entry.meldte);
+    onValue(entriesRef, (snapshot) => {
+        const entries = snapshot.val() || [];
+        entriesTableBody.innerHTML = '';
+        chartData.labels = ['Peter', 'Josh', 'Philip'];
+        chartData.datasets[0].data = [0, 0, 0];
+        
+        entries.forEach(entry => {
+            updateTableAndChart(entry.name, entry.reason, entry.kryss, entry.meldte);
+        });
     });
 
-    // Function to update chart data
     function updateChartData(name, kryss) {
         const index = chartData.labels.indexOf(name);
         if (index !== -1) {
             chartData.datasets[0].data[index] += kryss;
         } else {
-            // If name not found in labels, add it and update data
             chartData.labels.push(name);
             chartData.datasets[0].data.push(kryss);
             chartData.datasets[0].backgroundColor.push(getRandomColor());
@@ -50,42 +55,32 @@ document.addEventListener('DOMContentLoaded', function() {
         myChart.update();
     }
 
-    // Function to update table and chart
     function updateTableAndChart(name, reason, kryss, meldte) {
-        // Update table
         let row = entriesTableBody.insertRow();
         row.innerHTML = `<td>${name}</td><td>${reason}</td><td>${kryss}</td><td>${meldte}</td>`;
 
-        // Apply styles to the newly added row
         let cells = row.getElementsByTagName("td");
         for (let cell of cells) {
             cell.style.backgroundColor = 'white';
             cell.style.color = 'black';
         }
 
-        // Update chart data
         updateChartData(name, kryss);
     }
 
-    // Function to save new entry to Local Storage
-    function saveToLocalStorage(name, reason, kryss, meldte) {
-        let entries = JSON.parse(localStorage.getItem('entries')) || [];
-
-        let newEntry = {
+    function saveToDatabase(name, reason, kryss, meldte) {
+        const newEntryRef = push(entriesRef);
+        set(newEntryRef, {
             name: name,
             reason: reason,
             kryss: kryss,
             meldte: meldte
-        };
-
-        entries.push(newEntry);
-        localStorage.setItem('entries', JSON.stringify(entries));
+        });
     }
 
-    // Event listener for submit button
     const submitBtn = document.getElementById('submitBtn');
     submitBtn.addEventListener('click', function(event) {
-        event.preventDefault(); // Prevent form submission
+        event.preventDefault();
 
         const inputName = document.getElementById('inputName').value.trim();
         const hvorfor = document.getElementById('hvorfor').value.trim();
@@ -94,9 +89,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (inputName && hvorfor && !isNaN(antallKryss) && hvemMeldte) {
             updateTableAndChart(inputName, hvorfor, antallKryss, hvemMeldte);
-            saveToLocalStorage(inputName, hvorfor, antallKryss, hvemMeldte);
+            saveToDatabase(inputName, hvorfor, antallKryss, hvemMeldte);
 
-            // Clear input fields
             document.getElementById('inputName').value = '';
             document.getElementById('hvorfor').value = '';
             document.getElementById('antallKryss').value = '';

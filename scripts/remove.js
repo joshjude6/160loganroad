@@ -1,14 +1,19 @@
-document.addEventListener('DOMContentLoaded', function() {
-    // Retrieve entries from Local Storage or initialize if empty
-    let entries = JSON.parse(localStorage.getItem('entries')) || [];
+// remove.js
+import { db } from './firebase.js';
+import { ref, get, set, onValue } from "firebase/database";
 
-    // Populate table and chart with existing entries
+document.addEventListener('DOMContentLoaded', function() {
     const entriesList = document.getElementById('entriesList');
-    entries.forEach((entry, index) => {
-        addEntryToList(entry, index);
+    const entriesRef = ref(db, 'entries');
+
+    onValue(entriesRef, (snapshot) => {
+        const entries = snapshot.val() || [];
+        entriesList.innerHTML = '';
+        entries.forEach((entry, index) => {
+            addEntryToList(entry, index);
+        });
     });
 
-    // Function to add an entry to the list in admin.html
     function addEntryToList(entry, index) {
         const entryDiv = document.createElement('div');
         entryDiv.classList.add('entry');
@@ -19,24 +24,23 @@ document.addEventListener('DOMContentLoaded', function() {
         entriesList.appendChild(entryDiv);
     }
 
-    // Function to remove an entry from the list and update table/chart
     window.removeEntry = function(index) {
-        // Remove entry from entries array
-        if (index >= 0 && index < entries.length) {
-            entries.splice(index, 1);
-            localStorage.setItem('entries', JSON.stringify(entries));
+        get(entriesRef).then((snapshot) => {
+            const entries = snapshot.val() || [];
+            if (index >= 0 && index < entries.length) {
+                entries.splice(index, 1);
+                set(entriesRef, entries);
 
-            // Update entries list in admin.html
-            entriesList.innerHTML = '';
-            entries.forEach((entry, idx) => {
-                addEntryToList(entry, idx);
-            });
+                entriesList.innerHTML = '';
+                entries.forEach((entry, idx) => {
+                    addEntryToList(entry, idx);
+                });
 
-            // Update table and chart display in kryss.html
-            const iframe = document.getElementById('kryssFrame');
-            if (iframe) {
-                iframe.contentWindow.postMessage({ action: 'update', entries: entries }, '*');
+                const iframe = document.getElementById('kryssFrame');
+                if (iframe) {
+                    iframe.contentWindow.postMessage({ action: 'update', entries: entries }, '*');
+                }
             }
-        }
+        });
     };
 });

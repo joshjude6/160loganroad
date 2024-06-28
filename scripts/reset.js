@@ -1,11 +1,15 @@
+// reset.js
+import { db } from './firebase.js';
+import { ref, set } from "firebase/database";
+
 document.addEventListener('DOMContentLoaded', function() {
     const resetBtn = document.getElementById('resetBtn');
 
     resetBtn.addEventListener('click', function() {
-        // Clear entries from Local Storage
-        localStorage.removeItem('entries');
+        const entriesRef = ref(db, 'entries');
 
-        // Reset chart
+        set(entriesRef, []);
+
         const ctx = document.getElementById('myChart').getContext('2d');
         let chartData = {
             labels: ['Peter', 'Josh', 'Philip'],
