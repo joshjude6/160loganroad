@@ -20,6 +20,8 @@
         <a href="admin.html">Admin</a>
     </div>
     <h2 id="greeting">Velkommen!</h2>
+    <h3>Dine oppgaver for denne uken</h3>
+    <div id="tasks"></div>
 </body>
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
@@ -51,8 +53,41 @@
                 console.log("No such document!");
             }
         } else {
+            alert("Du må logge inn, babe")
             window.location.href = 'login.html'; // Redirect to login if no user is signed in
         }
     });
+    document.addEventListener('DOMContentLoaded', async () => {
+    const userId = auth.currentUser.uid;
+    const userDoc = await getDoc(doc(db, 'users', userId));
+    const userData = userDoc.data();
+
+    const roomDoc = await getDoc(doc(db, 'vaskeliste', userData.assignedRoom));
+    const roomData = roomDoc.data();
+
+    const tasksDiv = document.getElementById('tasks');
+    roomData.tasks.forEach((task, index) => {
+        const taskElement = document.createElement('div');
+        taskElement.innerHTML = `
+            <input type="checkbox" id="task${index}" ${task.done ? 'checked' : ''} onchange="updateTaskStatus('${userData.assignedRoom}', ${index})">
+            <label for="task${index}">${task.task}</label>
+        `;
+        tasksDiv.appendChild(taskElement);
+    });
+});
+
+async function updateTaskStatus(roomId, taskIndex) {
+    const roomDoc = await getDoc(doc(db, 'vaskeliste', roomId));
+    const roomData = roomDoc.data();
+
+    roomData.tasks[taskIndex].done = !roomData.tasks[taskIndex].done;
+    await setDoc(doc(db, 'vaskeliste', roomId), roomData);
+
+    const allTasksDone = roomData.tasks.every(task => task.done);
+    if (allTasksDone) {
+        await updateDoc(doc(db, 'vaskeliste', roomId), { status: true });
+    }
+}
+
 </script>
 </html>

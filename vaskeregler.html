@@ -20,28 +20,12 @@
         <a href="admin.html">Admin</a>
     </div>
     <h2 id="status" style="color: red;">Vasking denne uka er ikke fullført!😳</h2>
-    <p>Vaskeregler er TBA!</p>
-    <p>System for dette kommer når vi finner ut hvordan stedet ser ut.</p>
-    <div class="task-container">
-        <p>Ansvarlig for å vaske stua:</p>
-        <div class="navnelapper" id="stue_id">Philip</div>
-        <button onclick="markAsDone('stue')">Done</button>
-    </div>
-    <div class="task-container">
-        <p>Ansvarlig for å vaske badet:</p>
-        <div class="navnelapper" id="bad_id">Philip</div>
-        <button onclick="markAsDone('bad')">Done</button>
-    </div>
-    <div class="task-container">
-        <p>Ansvarlig for å vaske gulvet:</p>
-        <div class="navnelapper" id="gulv_id">Philip</div>
-        <button onclick="markAsDone('gulv')">Done</button>
-    </div>
+    <div id="cleaningSchedule"></div>
 </body>
 <script type="module">
-    import { initializeApp } from "firebase/app";
-    import { getAnalytics } from "firebase/analytics";
-    import { getFirestore, collection, doc, getDoc, setDoc } from "firebase/firestore";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-analytics.js";
+    import { getFirestore, collection, doc, getDoc, setDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
     
     const firebaseConfig = {
     apiKey: "AIzaSyA_PRc6DM_i3X5lar_vcRtQyr1YVDRNq_o",
@@ -56,6 +40,21 @@
 
     const app = initializeApp(firebaseConfig);
     const analytics = getAnalytics(app);
- //kommer mer her
+    const db = getFirestore(app);
+
+    async function fetchCleaningSchedule() {
+            const roomsCol = collection(db, 'vaskeliste');
+            const roomsSnapshot = await getDocs(roomsCol);
+            const roomsList = roomsSnapshot.docs.map(doc => doc.data());
+
+            const scheduleDiv = document.getElementById('cleaningSchedule');
+            roomsList.forEach(room => {
+                const roomDiv = document.createElement('div');
+                roomDiv.innerHTML = `<h3>${room.name}</h3><p>Assigned to: ${room.assignedTo}</p><p>Status: ${room.status ? 'Completed' : 'Incomplete'}</p>`;
+                scheduleDiv.appendChild(roomDiv);
+            });
+        }
+
+    fetchCleaningSchedule();
 </script>
 </html>

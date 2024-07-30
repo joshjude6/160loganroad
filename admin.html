@@ -32,6 +32,10 @@
                 <option value="philipSitater">Philip</option>
             </select>
             <button id="deletePersonQuotes">Fjern personens sitater</button>
+        <h2>Innstillinger for vaskeliste</h2>
+        <div id="roomAssignments"></div>
+        <button id="assignRoomsButton">Tildel rom</button>
+        <button id="resetTasksButton">Reset alle oppgaver</button>
         </div>
     </div>
     <p id="loadingMessage">Sjekker om du er admin eller prøver å snike deg inn...</p>
@@ -40,7 +44,7 @@
 </body>
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
-    import { getFirestore, collection, query, orderBy, getDocs, deleteDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+    import { getFirestore, collection, query, orderBy, getDocs, deleteDoc, doc, getDoc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
 
     const firebaseConfig = {
@@ -81,6 +85,7 @@
                 window.location.href = 'login.html'; 
             }
         } else {
+            alert("Logg inn først, jeg brukte lang tid på å fikse det...")
             window.location.href = 'login.html'; 
         }
     });
@@ -146,5 +151,80 @@
             alert("Velg en person, dummy.");
         }
     });
+    onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const userDoc = await getDoc(doc(db, 'users', user.uid));
+                if (userDoc.exists() && userDoc.data().isAdmin) {
+                    loadRoomAssignments();
+                    document.getElementById('assignRoomsButton').addEventListener('click', assignRooms);
+                    document.getElementById('resetTasksButton').addEventListener('click', resetTasks);
+                } else {
+                    alert("You do not have permission to view this page.");
+                    window.location.href = 'index.html';
+                }
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
+
+        async function loadRoomAssignments() {
+            const usersSnapshot = await getDocs(collection(db, 'users'));
+            const usersList = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+            const roomsSnapshot = await getDocs(collection(db, 'vaskeliste'));
+            const roomsList = roomsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+            const roomAssignmentsDiv = document.getElementById('roomAssignments');
+            roomAssignmentsDiv.innerHTML = '';
+
+            roomsList.forEach(room => {
+                const roomDiv = document.createElement('div');
+                roomDiv.innerHTML = `
+                    <label>${room.id}</label>
+                    <select id="room-${room.id}">
+                        <option value="">Velg bruker</option>
+                        ${usersList.map(user => `<option value="${user.id}">${user.fornavn} ${user.etternavn}</option>`).join('')}
+                    </select>
+                `;
+                roomAssignmentsDiv.appendChild(roomDiv);
+            });
+        }
+
+        async function assignRooms() {
+            const usersSnapshot = await getDocs(collection(db, 'users'));
+            const usersList = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+            const roomsSnapshot = await getDocs(collection(db, 'vaskeliste'));
+            const roomsList = roomsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+            const assignedUsers = new Set();
+
+            for (let room of roomsList) {
+                const selectElement = document.getElementById(`room-${room.id}`);
+                const selectedUserId = selectElement.value;
+
+                if (selectedUserId) {
+                    if (assignedUsers.has(selectedUserId)) {
+                        alert("Each user can only be assigned to one room. Please check your assignments.");
+                        return;
+                    }
+                    assignedUsers.add(selectedUserId);
+                    await updateDoc(doc(db, 'users', selectedUserId), { assignedRoom: room.id });
+                    await updateDoc(doc(db, 'vaskeliste', room.id), { assignedTo: selectedUserId, status: false });
+                }
+            }
+            alert("Rom har blitt tildelt for uka!");
+        }
+
+        async function resetTasks() {
+            const roomsSnapshot = await getDocs(collection(db, 'vaskeliste'));
+            roomsSnapshot.docs.forEach(async (roomDoc) => {
+                const roomData = roomDoc.data();
+                roomData.tasks.forEach(task => task.done = false);
+                await setDoc(doc(db, 'vaskeliste', roomDoc.id), { ...roomData, status: false });
+            });
+
+            alert("Tasks reset successfully!");
+        }
 </script>
 </html>

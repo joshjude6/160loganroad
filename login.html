@@ -43,7 +43,7 @@
 </body>
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
     import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
     const firebaseConfig = {
         apiKey: "AIzaSyA_PRc6DM_i3X5lar_vcRtQyr1YVDRNq_o",
@@ -93,7 +93,8 @@
                 fornavn: fornavn,
                 etternavn: etternavn,
                 email: email,
-                isAdmin: false
+                isAdmin: false,
+                assignedRoom: "none"
             });
             window.location.href = 'user.html'; // Redirect to user page on successful registration
         } catch (error) {
@@ -101,7 +102,7 @@
             alert("Registrering mislyktes. Prøv igjen og prøv hardere.");
         }
     });
-    
+
     document.getElementById('logoutButton').addEventListener('click', async () => {
     signOut(auth).then(() => {
         alert("Du har logget ut! Hadet :)")
