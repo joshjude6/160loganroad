@@ -19,14 +19,13 @@
         <a href="guide.html">Skal du flytte hit?</a>
         <a href="admin.html">Admin</a>
     </div>
-    <h2 id="greeting">Velkommen!</h2>
+    <h2 id="greeting"></h2>
     <div id="taskListContainer"></div>
-    <h2 style="display: none; color: green;" id="doneOrNot">Du er ferdig for uka! Thank you for your service😍</h2>
 </body>
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyA_PRc6DM_i3X5lar_vcRtQyr1YVDRNq_o",
@@ -42,7 +41,8 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth();
     const db = getFirestore(app);
-
+    const greeting = document.getElementById('greeting');
+    const taskListContainer = document.getElementById('taskListContainer');
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             const userDoc = await getDoc(doc(db, 'users', user.uid));
@@ -58,16 +58,13 @@
         }
     });
 
-    const greeting = document.getElementById('greeting');
-    const taskListContainer = document.getElementById('taskListContainer');
-
-        onAuthStateChanged(auth, async (user) => {
+    onAuthStateChanged(auth, async (user) => {
             if (user) {
                 const userRef = doc(db, 'users', user.uid);
                 const userDoc = await getDoc(userRef);
                 if (userDoc.exists()) {
                     const userData = userDoc.data();
-                    greeting.textContent = `Hei, ${userData.fornavn}! Her er dine oppgaver for denne uken, kos deg😚!`;
+                    greeting.textContent = `Hei, ${userData.fornavn}! Her er oppgavene dine for uka.`;
                     renderTasks(user.uid);
                 } else {
                     greeting.textContent = 'Brukerdata ikke funnet.';
@@ -97,7 +94,7 @@
                         checkbox.checked = task.completed || false;
                         checkbox.addEventListener('change', () => updateTaskStatus(room, index, checkbox.checked));
                         listItem.appendChild(checkbox);
-                        listItem.appendChild(document.createTextNode(task));
+                        listItem.appendChild(document.createTextNode(task.name || task));
                         taskList.appendChild(listItem);
                     });
                     
@@ -112,16 +109,16 @@
             
             if (roomDoc.exists()) {
                 const tasks = roomDoc.data().tasks;
-                tasks[index] = { name: tasks[index], completed: completed };
+                tasks[index] = { name: tasks[index].name || tasks[index], completed };
                 
                 await updateDoc(roomRef, { tasks });
                 
-                if (tasks.every(task => task.completed)) {
-                    await updateDoc(roomRef, { status: true });
+                const allTasksCompleted = tasks.every(task => task.completed);
+                await updateDoc(roomRef, { status: allTasksCompleted });
+                
+                if (allTasksCompleted) {
                     alert('Alle oppgaver for rommet er fullført!');
-                    document.getElementById('doneOrNot').style.display = 'flex';
-                } else {
-                    await updateDoc(roomRef, { status: false });
+                    console.log("Alle oppgaver fullført");
                 }
             }
         }
