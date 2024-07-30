@@ -20,8 +20,8 @@
         <a href="admin.html">Admin</a>
     </div>
     <h2 id="greeting">Velkommen!</h2>
-    <h3>Dine oppgaver for denne uken</h3>
-    <div id="tasks"></div>
+    <div id="taskListContainer"></div>
+    <h2 style="display: none; color: green;" id="doneOrNot">Du er ferdig for uka! Thank you for your service😍</h2>
 </body>
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
@@ -57,37 +57,73 @@
             window.location.href = 'login.html'; // Redirect to login if no user is signed in
         }
     });
-    document.addEventListener('DOMContentLoaded', async () => {
-    const userId = auth.currentUser.uid;
-    const userDoc = await getDoc(doc(db, 'users', userId));
-    const userData = userDoc.data();
 
-    const roomDoc = await getDoc(doc(db, 'vaskeliste', userData.assignedRoom));
-    const roomData = roomDoc.data();
+    const greeting = document.getElementById('greeting');
+    const taskListContainer = document.getElementById('taskListContainer');
 
-    const tasksDiv = document.getElementById('tasks');
-    roomData.tasks.forEach((task, index) => {
-        const taskElement = document.createElement('div');
-        taskElement.innerHTML = `
-            <input type="checkbox" id="task${index}" ${task.done ? 'checked' : ''} onchange="updateTaskStatus('${userData.assignedRoom}', ${index})">
-            <label for="task${index}">${task.task}</label>
-        `;
-        tasksDiv.appendChild(taskElement);
-    });
-});
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const userRef = doc(db, 'users', user.uid);
+                const userDoc = await getDoc(userRef);
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    greeting.textContent = `Hei, ${userData.fornavn}! Her er dine oppgaver for denne uken, kos deg😚!`;
+                    renderTasks(user.uid);
+                } else {
+                    greeting.textContent = 'Brukerdata ikke funnet.';
+                }
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
 
-async function updateTaskStatus(roomId, taskIndex) {
-    const roomDoc = await getDoc(doc(db, 'vaskeliste', roomId));
-    const roomData = roomDoc.data();
+        async function renderTasks(userId) {
+            const rooms = ['bathroom', 'kitchen', 'livingRoom'];
+            taskListContainer.innerHTML = '';
+            
+            for (const room of rooms) {
+                const roomRef = doc(db, 'vaskeliste', room);
+                const roomDoc = await getDoc(roomRef);
+                
+                if (roomDoc.exists() && roomDoc.data().assignedTo === userId) {
+                    const roomData = roomDoc.data();
+                    const taskList = document.createElement('ul');
+                    taskList.innerHTML = `<h3>${room.charAt(0).toUpperCase() + room.slice(1)}</h3>`;
+                    
+                    roomData.tasks.forEach((task, index) => {
+                        const listItem = document.createElement('li');
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.checked = task.completed || false;
+                        checkbox.addEventListener('change', () => updateTaskStatus(room, index, checkbox.checked));
+                        listItem.appendChild(checkbox);
+                        listItem.appendChild(document.createTextNode(task));
+                        taskList.appendChild(listItem);
+                    });
+                    
+                    taskListContainer.appendChild(taskList);
+                }
+            }
+        }
 
-    roomData.tasks[taskIndex].done = !roomData.tasks[taskIndex].done;
-    await setDoc(doc(db, 'vaskeliste', roomId), roomData);
-
-    const allTasksDone = roomData.tasks.every(task => task.done);
-    if (allTasksDone) {
-        await updateDoc(doc(db, 'vaskeliste', roomId), { status: true });
-    }
-}
-
+        async function updateTaskStatus(room, index, completed) {
+            const roomRef = doc(db, 'vaskeliste', room);
+            const roomDoc = await getDoc(roomRef);
+            
+            if (roomDoc.exists()) {
+                const tasks = roomDoc.data().tasks;
+                tasks[index] = { name: tasks[index], completed: completed };
+                
+                await updateDoc(roomRef, { tasks });
+                
+                if (tasks.every(task => task.completed)) {
+                    await updateDoc(roomRef, { status: true });
+                    alert('Alle oppgaver for rommet er fullført!');
+                    document.getElementById('doneOrNot').style.display = 'flex';
+                } else {
+                    await updateDoc(roomRef, { status: false });
+                }
+            }
+        }
 </script>
 </html>
