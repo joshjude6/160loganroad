@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vaskeregler</title>
+    <title>Bruker</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -19,26 +19,40 @@
         <a href="guide.html">Skal du flytte hit?</a>
         <a href="admin.html">Admin</a>
     </div>
-   
+    <h2 id="greeting">Velkommen!</h2>
 </body>
 <script type="module">
-    import { initializeApp } from "firebase/app";
-    import { getAnalytics } from "firebase/analytics";
-    import { getFirestore, collection, doc, getDoc, setDoc } from "firebase/firestore";
-    
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+
     const firebaseConfig = {
-    apiKey: "AIzaSyA_PRc6DM_i3X5lar_vcRtQyr1YVDRNq_o",
-    authDomain: "logan-road.firebaseapp.com",
-    databaseURL: "https://logan-road-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "logan-road",
-    storageBucket: "logan-road.appspot.com",
-    messagingSenderId: "659456402188",
-    appId: "1:659456402188:web:1c77d675d130038141df29",
-    measurementId: "G-LHYYB4FNXF"
+        apiKey: "AIzaSyA_PRc6DM_i3X5lar_vcRtQyr1YVDRNq_o",
+        authDomain: "logan-road.firebaseapp.com",
+        databaseURL: "https://logan-road-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "logan-road",
+        storageBucket: "logan-road.appspot.com",
+        messagingSenderId: "659456402188",
+        appId: "1:659456402188:web:1c77d675d130038141df29",
+        measurementId: "G-LHYYB4FNXF"
     };
 
     const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
- //kommer mer her
+    const auth = getAuth();
+    const db = getFirestore(app);
+
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            const userDoc = await getDoc(doc(db, 'users', user.uid));
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
+                document.getElementById('greeting').innerText = `Velkommen til siden din, ${userData.fornavn}!`;
+            } else {
+                console.log("No such document!");
+            }
+        } else {
+            window.location.href = 'login.html'; // Redirect to login if no user is signed in
+        }
+    });
 </script>
 </html>

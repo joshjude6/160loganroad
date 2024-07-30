@@ -22,19 +22,23 @@
     <h2>Ikke meg som klarte å implementere login 😍</h2>
     <p>Velkommen til kollektivnettsida! Jeg håper vi faktisk ender opp med å bruke denne, hihi. Hvis du syns nettsiden er stygg, så syns jeg du er stygg.</p>
     <p>Logg inn under:</p>
-    <div class="login-bar">
+    <div class="login-bar" id="login-bar">
         <input type="email" id="login-email" placeholder="Email">
         <input type="password" id="login-password" placeholder="Passord">
         <button id="loginButton">Logg inn</button>
     </div>
     <p>Registrer deg under:</p>
-    <div class="register-bar">
+    <div class="register-bar" id="reg-bar">
         <input type="text" id="fornavn" placeholder="Fornavn">
         <input type="text" id="etternavn" placeholder="Etternavn">
         <input type="email" id="register-email" placeholder="Email">
         <input type="password" id="register-password" placeholder="Passord">
         <input type="password" id="confirm-password" placeholder="Bekreft passord">
         <button id="registerButton">Registrer bruker</button>
+    </div>
+    <p>Logg ut under:</p>
+    <div class="login-bar" id="logout-bar">
+        <button id="logoutButton">Logg ut</button>
     </div>
 </body>
 <script type="module">
@@ -88,13 +92,22 @@
             await setDoc(doc(db, 'users', user.uid), {
                 fornavn: fornavn,
                 etternavn: etternavn,
-                email: email
+                email: email,
+                isAdmin: false
             });
             window.location.href = 'user.html'; // Redirect to user page on successful registration
         } catch (error) {
             console.error("Error registering user: ", error.message);
             alert("Registrering mislyktes. Prøv igjen og prøv hardere.");
         }
+    });
+    
+    document.getElementById('logoutButton').addEventListener('click', async () => {
+    signOut(auth).then(() => {
+        alert("Du har logget ut! Hadet :)")
+    }).catch((error) => {
+        console.error("Logout failed.")
+    }); 
     });
 </script>
 </html>
