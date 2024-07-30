@@ -10,7 +10,7 @@
   font-family: 'Neue Machina Light';
   src: url('/fonter/NeueMachina-Light.otf') format('opentype'); /* Adjust the path to the font file */
 }
-@font-face{
+@font-face {
   font-family: 'Helvetica';
   src: url('/fonter/Helvetica.ttf') format('opentype');
 }
@@ -38,7 +38,7 @@ p {
   text-align: center;
 }
 
-.topnav a{
+.topnav a {
   font-family: 'Helvetica';
   font-size: 20px;
   display: inline-block;
@@ -53,19 +53,20 @@ p {
   color: black;
 }
 
-.container{
+.task-container {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
+  margin-bottom: 20px;
 }
 
 .navnelapper {
-  width: 40px;
-  height: 2px;
+  width: auto; /* Adjusted to fit the text */
+  height: auto; /* Adjusted to fit the text */
   font-size: 20px;
   font-family: 'Helvetica';
   background-color: gray;
-  padding: 20px;
+  padding: 10px 20px;
   margin: 10px;
   color: white;
   border-radius: 15px;
@@ -74,19 +75,48 @@ p {
   align-items: center;
 }
 
-.navnelapper-s {
-  width: 40px;
-  height: 2px;
-  font-size: 20px;
+button {
+  padding: 10px 15px;
+  font-size: 18px;
   font-family: 'Helvetica';
-  background-color: green;
-  padding: 20px;
-  margin: 10px;
+  cursor: pointer;
+  background-color: #125488;
   color: white;
-  border-radius: 15px;
+  border: none;
+  border-radius: 5px;
+  margin-top: 10px;
+  transition: background-color 0.3s;
+}
+
+.vertical-buttons {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
+
+}
+
+.vertical-buttons button,
+.vertical-buttons select {
+  margin: 5px 0;
+}
+
+.login-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 5 auto;
+}
+
+.register-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 5 auto;
+}
+
+
+button:hover {
+  background-color: #2a93d5;
 }
 
 .input-bar {
@@ -147,6 +177,16 @@ table, th, td {
 th, td {
   padding: 10px;
   text-align: center;
+  background-color: #f2f2f2;
+  color: black;
+}
+tr:nth-child(even) {
+  background-color: white;
+  color: black;
+}
+tr:nth-child(odd) {
+  background-color: white;
+  color: black;
 }
 
 #chartContainer {
@@ -154,7 +194,6 @@ th, td {
   margin-top: 20px;
   display: flex;
   margin: 20px auto;
-
 }
 
 .entriesList {
@@ -171,3 +210,32 @@ th, td {
   cursor: pointer;
   transition: background-color 0.3s;
 }
+
+#tipsTable {
+  width: 80%;
+  margin: 5 auto;
+  border-collapse: collapse;
+}
+
+#tipsTable th, #tipsTable td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+#tipsTable th {
+  background-color: #f4f4f4; /* Gray background for header */
+  text-align: center;
+}
+
+#tipsTable td {
+  background-color: white; /* White background for table body cells */
+}
+
+#tipsTable tr:nth-child(even) {
+  background-color: #f9f9f9; /* Light gray for even rows */
+}
+
+#tipsTable tr:hover {
+  background-color: #f1f1f1;
+}
+

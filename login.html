@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>1603, 160 Logan Road</h1> 
+    <div class="topnav">
+        <a href="login.html">Login</a>
+        <a href="user.html">Bruker</a>
+        <a href="index.html">Hjem</a>
+        <a href="vaskeregler.html">Vaskeregler</a>
+        <a href="kryss.html">Kryss</a>
+        <a href="sitater.html">Sitater</a>
+        <a href="lardom.html">Australsk lærdom</a>
+        <a href="guide.html">Skal du flytte hit?</a>
+        <a href="admin.html">Admin</a>
+    </div>
+    <h2>Ikke meg som klarte å implementere login 😍</h2>
+    <p>Velkommen til kollektivnettsida! Jeg håper vi faktisk ender opp med å bruke denne, hihi. Hvis du syns nettsiden er stygg, så syns jeg du er stygg.</p>
+    <p>Logg inn under:</p>
+    <div class="login-bar">
+        <input type="email" id="login-email" placeholder="Email">
+        <input type="password" id="login-password" placeholder="Passord">
+        <button id="loginButton">Logg inn</button>
+    </div>
+    <p>Registrer deg under:</p>
+    <div class="register-bar">
+        <input type="text" id="fornavn" placeholder="Fornavn">
+        <input type="text" id="etternavn" placeholder="Etternavn">
+        <input type="email" id="register-email" placeholder="Email">
+        <input type="password" id="register-password" placeholder="Passord">
+        <input type="password" id="confirm-password" placeholder="Bekreft passord">
+        <button id="registerButton">Registrer bruker</button>
+    </div>
+</body>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+    const firebaseConfig = {
+        apiKey: "AIzaSyA_PRc6DM_i3X5lar_vcRtQyr1YVDRNq_o",
+        authDomain: "logan-road.firebaseapp.com",
+        databaseURL: "https://logan-road-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "logan-road",
+        storageBucket: "logan-road.appspot.com",
+        messagingSenderId: "659456402188",
+        appId: "1:659456402188:web:1c77d675d130038141df29",
+        measurementId: "G-LHYYB4FNXF"
+    };
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    document.getElementById('loginButton').addEventListener('click', async () => {
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+            window.location.href = 'user.html'; // Redirect to user page on successful login
+        } catch (error) {
+            console.error("Feil ved login: ", error.message);
+            alert("Login mislyktes, fyf. Sjekk at du ikke skrev noe feil.");
+        }
+    });
+
+    document.getElementById('registerButton').addEventListener('click', async () => {
+        const fornavn = document.getElementById('fornavn').value;
+        const etternavn = document.getElementById('etternavn').value;
+        const email = document.getElementById('register-email').value;
+        const password = document.getElementById('register-password').value;
+        const confirmPassword = document.getElementById('confirm-password').value;
+
+        if (password !== confirmPassword) {
+            alert("Passordene stemmer ikke overens.");
+            return;
+        }
+
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+            
+            // Save user details in Firestore
+            await setDoc(doc(db, 'users', user.uid), {
+                fornavn: fornavn,
+                etternavn: etternavn,
+                email: email
+            });
+            window.location.href = 'user.html'; // Redirect to user page on successful registration
+        } catch (error) {
+            console.error("Error registering user: ", error.message);
+            alert("Registrering mislyktes. Prøv igjen og prøv hardere.");
+        }
+    });
+</script>
+</html>

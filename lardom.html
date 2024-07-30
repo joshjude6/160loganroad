@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Australsk lærdom</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>1603, 160 Logan Road</h1> 
+    <div class="topnav">
+        <a href="login.html">Login</a>
+        <a href="user.html">Bruker</a>
+        <a href="index.html">Hjem</a>
+        <a href="vaskeregler.html">Vaskeregler</a>
+        <a href="kryss.html">Kryss</a>
+        <a href="bingo.html">Bingo</a>
+        <a href="sitater.html">Sitater</a>
+        <a href="lardom.html">Australsk lærdom</a>
+        <a href="guide.html">Skal du flytte hit?</a>
+        <a href="admin.html">Admin</a>
+    </div>
+    <h2>Hvis du har noen tips du finner ut av angående livet i Australia, legg de igjen her!</h2>
+    <div class="input-bar">
+        <input type="text" id="tipInput" placeholder="Skriv inn tipset ditt.">
+        <button id="submitTip">Send inn tips!</button>
+    </div>
+    <table id="tipsTable">
+        <thead>
+            <tr>
+                <th>Tips</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Tips will be dynamically added here -->
+        </tbody>
+    </table>
+</body>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+    import { getFirestore, doc, setDoc, serverTimestamp, collection, addDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+    const firebaseConfig = {
+        apiKey: "AIzaSyA_PRc6DM_i3X5lar_vcRtQyr1YVDRNq_o",
+        authDomain: "logan-road.firebaseapp.com",
+        databaseURL: "https://logan-road-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "logan-road",
+        storageBucket: "logan-road.appspot.com",
+        messagingSenderId: "659456402188",
+        appId: "1:659456402188:web:1c77d675d130038141df29",
+        measurementId: "G-LHYYB4FNXF"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    document.getElementById("submitTip").addEventListener('click', async function() {
+        const tip = document.getElementById("tipInput").value;
+        if (tip) {
+            try {
+                await addDoc(collection(db, 'tips'), {
+                    tip: tip,
+                    time: serverTimestamp()
+                });
+                document.getElementById("tipInput").value = ''; // Clear input field
+                loadTips(); // Refresh the tips list
+                alert("Tips sendt inn!");
+            } catch (error) {
+                console.error("Error saving tip: ", error);
+            }
+        } else {
+            alert("Du må skrive inn et tips!");
+        }
+    });
+
+    async function loadTips() {
+        const q = query(collection(db, 'tips'), orderBy('time', 'desc'));
+        const querySnapshot = await getDocs(q);
+        const tipsTableBody = document.getElementById("tipsTable").getElementsByTagName("tbody")[0];
+        tipsTableBody.innerHTML = ''; // Clear existing tips
+        
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            const row = tipsTableBody.insertRow();
+            row.insertCell(0).textContent = data.tip;
+        });
+    }
+
+    function formatTimestamp(timestamp) {
+        const hours = timestamp.getHours().toString().padStart(2, '0');
+        const minutes = timestamp.getMinutes().toString().padStart(2, '0');
+        return `${hours}:${minutes}`;
+    }
+
+    // Load tips when the page loads
+    window.onload = loadTips;
+</script>
+</html>

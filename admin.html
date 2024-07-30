@@ -9,39 +9,116 @@
 <body>
     <h1>1603, 160 Logan Road</h1> 
     <div class="topnav">
+        <a href="login.html">Login</a>
+        <a href="user.html">Bruker</a>
         <a href="index.html">Hjem</a>
         <a href="vaskeregler.html">Vaskeregler</a>
         <a href="kryss.html">Kryss</a>
-        <a href="bingo.html">Bingo</a>
         <a href="sitater.html">Sitater</a>
         <a href="lardom.html">Australsk lærdom</a>
         <a href="guide.html">Skal du flytte hit?</a>
         <a href="admin.html">Admin</a>
     </div>
-    <h2>Resette kryss og nullstille tabell?</h2>
-    <div class="input-bar">
-        <button id="resetBtn" onclick="resetTableAndChart()">Nullstill hele tabellen</button>
+    <h2>Heihei, admin bby</h2>
+    <h2>Innstillinger for sitater</h2>
+
+    <div class="vertical-buttons">
+        <button id="removeLastQuote">Fjern siste sitat</button>
+        <button id="deleteAllQuotes">Fjern alle sitater</button>
+        <select id="personDropdown">
+            <option value="" disabled selected>Velg person</option>
+            <option value="peterSitater">Peter</option>
+            <option value="joshSitater">Josh</option>
+            <option value="philipSitater">Philip</option>
+        </select>
+        <button id="deletePersonQuotes">Fjern personens sitater</button>
     </div>
-    <div id="entriesList">
-        <!-- List of entries with remove buttons will be populated dynamically -->
-    </div>
-    <h2>To-do's for admin:</h2>
-    <p>Låse admin.html med passord</p>
-    <p>Implementere sitat-funksjon</p>
-    <p>Implementere australsk lærdom</p>
-    <p>Implementere vaskesystem</p>
-    <p>Implementere funksjon for å endre person som har singelrom, og dato for rullering</p>
-    <p>Gjøre siden finere fordi bruh</p>
-    <script src="/scripts/firebase.js"></script>
-    <script src="/scripts/reset.js"></script>
-    <script src="/scripts/remove.js"></script>
-    <script>
-        function resetTableAndChart() {
-            const iframe = document.getElementById('kryssFrame');
-            if (iframe) {
-                iframe.contentWindow.postMessage({ action: 'reset' }, '*');
-            }
-        }
-    </script>
+    
 </body>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+    import { getFirestore, collection, query, orderBy, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+    
+    const firebaseConfig = {
+        apiKey: "AIzaSyA_PRc6DM_i3X5lar_vcRtQyr1YVDRNq_o",
+        authDomain: "logan-road.firebaseapp.com",
+        databaseURL: "https://logan-road-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "logan-road",
+        storageBucket: "logan-road.appspot.com",
+        messagingSenderId: "659456402188",
+        appId: "1:659456402188:web:1c77d675d130038141df29",
+        measurementId: "G-LHYYB4FNXF"
+    };
+    
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const personMap = {
+        peterSitater: "Peter",
+        joshSitater: "Josh",
+        philipSitater: "Philip"
+    };
+
+    document.getElementById("removeLastQuote").addEventListener('click', async function() {
+        try {
+            let lastQuoteDoc = null;
+            const persons = Object.keys(personMap);
+
+            for (const person of persons) {
+                const q = query(collection(db, 'sitater', person, 'quotes'), orderBy('time', 'desc'));
+                const querySnapshot = await getDocs(q);
+                if (!querySnapshot.empty) {
+                    const firstDoc = querySnapshot.docs[0];
+                    if (!lastQuoteDoc || firstDoc.data().time.toDate() > lastQuoteDoc.data().time.toDate()) {
+                        lastQuoteDoc = firstDoc;
+                    }
+                }
+            }
+
+            if (lastQuoteDoc) {
+                await deleteDoc(doc(db, lastQuoteDoc.ref.path));
+                alert("Siste sitat fjernet!");
+            } else {
+                alert("Ingen sitater å fjerne.");
+            }
+        } catch (error) {
+            console.error("Error removing last quote: ", error);
+        }
+    });
+
+    document.getElementById("deleteAllQuotes").addEventListener('click', async function() {
+        try {
+            const persons = Object.keys(personMap);
+
+            for (const person of persons) {
+                const q = query(collection(db, 'sitater', person, 'quotes'));
+                const querySnapshot = await getDocs(q);
+                querySnapshot.forEach(async (doc) => {
+                    await deleteDoc(doc.ref);
+                });
+            }
+            alert("Alle sitater slettet!");
+        } catch (error) {
+            console.error("Error deleting all quotes: ", error);
+        }
+    });
+
+    document.getElementById("deletePersonQuotes").addEventListener('click', async function() {
+        const person = document.getElementById("personDropdown").value;
+        if (person) {
+            try {
+                const q = query(collection(db, 'sitater', person, 'quotes'));
+                const querySnapshot = await getDocs(q);
+                querySnapshot.forEach(async (doc) => {
+                    await deleteDoc(doc.ref);
+                });
+                alert(`Alle sitatene til ${personMap[person]} har blitt slettet!`);
+            } catch (error) {
+                console.error(`Error deleting quotes from ${personMap[person]}: `, error);
+            }
+        } else {
+            alert("Velg en person, dummy.");
+        }
+    });
+</script>
 </html>
