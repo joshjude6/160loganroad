@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>1603, 160 Logan Road</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="firebase.js"></script>
 </head>
 
 <body>
@@ -34,7 +33,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
     import { getFirestore, doc, getDoc, updateDoc, getDocs, collection, where, addDoc, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
-    import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-database.js";
+    //import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyA_PRc6DM_i3X5lar_vcRtQyr1YVDRNq_o",
@@ -52,37 +51,40 @@
     const db = getFirestore(app);
 
     async function fetchLastThreeSubmissions() {
-    const invitationsDiv = document.getElementById("invitations");
-    const invitationOne = document.getElementById("invitationOne");
-    const invitationTwo = document.getElementById("invitationTwo");
-    const invitationThree = document.getElementById("invitationThree");
+        const invitationsDiv = document.getElementById("invitations");
+        const invitationOne = document.getElementById("invitationOne");
+        const invitationTwo = document.getElementById("invitationTwo");
+        const invitationThree = document.getElementById("invitationThree");
 
-    // Clear current invitations
-    invitationOne.innerText = "";
-    invitationTwo.innerText = "";
-    invitationThree.innerText = "";
+        // Clear current invitations
+        invitationOne.innerText = "";
+        invitationTwo.innerText = "";
+        invitationThree.innerText = "";
 
-    try {
-        const q = query(collection(db, 'sosialt', 'hendelse', 'entries'), orderBy("when", "desc"), limit(3));
-        const querySnapshot = await getDocs(q);
+        try {
+            const q = query(collection(db, 'sosialt', 'hendelse', 'entries'), orderBy("time", "desc"), limit(3));
+            const querySnapshot = await getDocs(q);
+            const invitations = [];
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                invitations.push(`${data.who} inviterer til ${data.what}, ${data.when}`);
+            });
 
-        const invitations = [];
-        querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            invitations.push(`${data.who} inviterer til ${data.what}, ${data.when}`);
-        });
-
-        // Update the HTML elements with the fetched data
-        if (invitations[0]) invitationOne.innerText = invitations[0];
-        if (invitations[1]) invitationTwo.innerText = invitations[1];
-        if (invitations[2]) invitationThree.innerText = invitations[2];
-    } catch (error) {
-        console.error("Error fetching submissions: ", error);
+            // Update the HTML elements with the fetched data
+            if (invitations[0]) invitationOne.innerText = invitations[0];
+            if (invitations[1]) invitationTwo.innerText = invitations[1];
+            if (invitations[2]) invitationThree.innerText = invitations[2];
+        } catch (error) {
+            console.error("Error fetching submissions: ", error);
+        }
     }
-}
 
 // Call the function to fetch and display the last three submissions
-fetchLastThreeSubmissions();
+    try {
+        fetchLastThreeSubmissions();
+    } catch(error){
+        console.error("Failed to fetch submission: ", error)
+    }
 
 </script>
 </html>

@@ -33,8 +33,8 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
-    import { getFirestore, doc, getDoc, updateDoc, getDocs, collection, where, addDoc } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
-    import { fetchLastThreeSubmissions } from "/Users/joshjude/Documents/160loganroad/index.html";
+    import { getFirestore, doc, getDoc, updateDoc, getDocs, collection, where, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+    //import { fetchLastThreeSubmissions } from "./index.html";
     const firebaseConfig = {
         apiKey: "AIzaSyA_PRc6DM_i3X5lar_vcRtQyr1YVDRNq_o",
         authDomain: "logan-road.firebaseapp.com",
@@ -61,6 +61,7 @@
                 const userData = userDoc.data();
                 greeting.textContent = `Velkommen til siden din, ${userData.fornavn}! Her er oppgavene dine for uka.`;
                 kryssMarker.textContent = `Du har ${userData.totalCrosses} kryss!`;
+                console.log("All text loaded");
                 document.getElementById("socialButton").addEventListener('click', async function() {
                 const what = document.getElementById("what").value;
                 const when = document.getElementById("when").value;
@@ -70,11 +71,12 @@
                         const docRef = await addDoc(collection(db, 'sosialt', 'hendelse', 'entries'), {
                             what: what,
                             when: when,
-                            who: userData.fornavn
+                            who: userData.fornavn,
+                            time: serverTimestamp()
                         });
                         console.log("Social event added with ID: ", docRef.id);
                         alert("Sendt inn sosial event!")
-                        fetchLastThreeSubmissions();
+                        //fetchLastThreeSubmissions();
                     } catch (error) {
                         console.error("Error reporting event: ", error);
                     }
