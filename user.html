@@ -22,6 +22,7 @@
     <h2 id="greeting"></h2>
     <div id="roomTasks"></div>
     <button id="markAsDoneButton" style="display: none; margin: 0 auto; margin-top: 20px;">Klikk når du er ferdig!</button>
+    <h2 id="kryssMarker"></h2>
 
 </body>
 <script type="module">
@@ -46,14 +47,14 @@
     const greeting = document.getElementById('greeting');
     const roomTasksDiv = document.getElementById('roomTasks');
     const markAsDoneButton = document.getElementById('markAsDoneButton');
-
+    const kryssMarker = document.getElementById('kryssMarker')
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             const userDoc = await getDoc(doc(db, 'users', user.uid));
             if (userDoc.exists()) {
                 const userData = userDoc.data();
                 greeting.textContent = `Velkommen til siden din, ${userData.fornavn}! Her er oppgavene dine for uka.`;
-
+                kryssMarker.textContent = `Du har ${userData.totalCrosses} kryss!`;
                 // Fetch the room assigned to the user
                 const roomQuery = await getDocs(collection(db, 'vaskeliste'), where('assignedTo', '==', user.fornavn));
                 console.log(roomQuery)
