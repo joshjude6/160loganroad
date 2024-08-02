@@ -23,13 +23,18 @@
     <div id="roomTasks"></div>
     <button id="markAsDoneButton" style="display: none; margin: 0 auto; margin-top: 20px;">Klikk når du er ferdig!</button>
     <h2 id="kryssMarker"></h2>
-
+    <h2>Meld sosialt under!</h2>
+    <div class="vertical-buttons">
+        <input type="text" placeholder="Hva" id="what">
+        <input type="text" placeholder="Når" id="when">
+        <button type="submit" id="socialButton">Send inn!</button>
+    </div>
 </body>
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
-    import { getFirestore, doc, getDoc, updateDoc, getDocs, collection, where } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
-
+    import { getFirestore, doc, getDoc, updateDoc, getDocs, collection, where, addDoc } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+    import { fetchLastThreeSubmissions } from "/Users/joshjude/Documents/160loganroad/index.html";
     const firebaseConfig = {
         apiKey: "AIzaSyA_PRc6DM_i3X5lar_vcRtQyr1YVDRNq_o",
         authDomain: "logan-road.firebaseapp.com",
@@ -47,7 +52,8 @@
     const greeting = document.getElementById('greeting');
     const roomTasksDiv = document.getElementById('roomTasks');
     const markAsDoneButton = document.getElementById('markAsDoneButton');
-    const kryssMarker = document.getElementById('kryssMarker')
+    const kryssMarker = document.getElementById('kryssMarker');
+    const socialButton = document.getElementById('socialButton');
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             const userDoc = await getDoc(doc(db, 'users', user.uid));
@@ -55,6 +61,27 @@
                 const userData = userDoc.data();
                 greeting.textContent = `Velkommen til siden din, ${userData.fornavn}! Her er oppgavene dine for uka.`;
                 kryssMarker.textContent = `Du har ${userData.totalCrosses} kryss!`;
+                document.getElementById("socialButton").addEventListener('click', async function() {
+                const what = document.getElementById("what").value;
+                const when = document.getElementById("when").value;
+                if (what && when) {
+                    try {
+                        console.log("Adding social event to Firestore");
+                        const docRef = await addDoc(collection(db, 'sosialt', 'hendelse', 'entries'), {
+                            what: what,
+                            when: when,
+                            who: userData.fornavn
+                        });
+                        console.log("Social event added with ID: ", docRef.id);
+                        alert("Sendt inn sosial event!")
+                        fetchLastThreeSubmissions();
+                    } catch (error) {
+                        console.error("Error reporting event: ", error);
+                    }
+                } else {
+                    alert("Fyll ut alle feltene 😡");
+                }
+                });
                 // Fetch the room assigned to the user
                 const roomQuery = await getDocs(collection(db, 'vaskeliste'), where('assignedTo', '==', user.fornavn));
                 console.log(roomQuery)
@@ -105,6 +132,8 @@
             console.error("Error marking room as done: ", error);
         }
     }
+
+    
 
 </script>
 </html>

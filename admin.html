@@ -19,6 +19,9 @@
         <a href="guide.html">Skal du flytte hit?</a>
         <a href="admin.html">Admin</a>
     </div>
+    <div id="otherContent" style="display: none;">
+        <h2>Gå vekk😍, send en pull request dersom noe må endres🙏</h2>
+    </div>
     <div id="adminContent" style="display: none">
         <h2>Heihei, admin!</h2>
         <h2>Innstillinger for sitater</h2>
@@ -40,6 +43,16 @@
             <button id="assignButton">Tildel rom</button>
         </div>
         <button id="resetRooms" style="margin: auto;">Reset status til alle rom</button>
+        <h2>Innstillinger for kryss - WIP!</h2>
+        <div class="vertical-buttons">
+            <select id="personLastDropdown">
+                <option value="" disabled selected>Velg person</option>
+                <option value="peterSitater">Peter</option>
+                <option value="joshSitater">Josh</option>
+                <option value="philipSitater">Philip</option>
+            </select>
+            <button id="removeLastKryss">Fjern siste kryss til person</button>
+        </div>
     </div>
     <p id="loadingMessage">Sjekker om du er admin eller prøver å snike deg inn...</p>
 
@@ -84,8 +97,8 @@
                         document.getElementById('adminContent').style.display = 'block';
                         populateDropdowns();
                     } else {
-                        alert("Gå vekk😍, send en pull request dersom noe må endres 🙏");
-                        window.location.href = 'user.html';
+                        document.getElementById('loadingMessage').style.display = 'none';
+                        document.getElementById('otherContent').style.display = 'block';
                     }
                 } else {
                     console.log("No such document!");
@@ -201,6 +214,29 @@
             });
             alert('Alle rom er dirty igjen :D!');
         }
+
+        document.getElementById("removeLastKryss").addEventListener('click', async function() {
+            const person = document.getElementById("personLastDropdown").value;
+            const personLowerCase = person.toLowerCase();
+            if (person) {
+                try {
+                    const kryssRef = collection(db, 'kryss', personLowerCase + 'Kryss', 'entries');
+                    const kryssQuery = query(kryssRef, orderBy('time', 'desc'), limit(1));
+                    const querySnapshot = await getDocs(kryssQuery);
+                    if (!querySnapshot.empty) {
+                        const kryssDoc = querySnapshot.docs[0];
+                        await deleteDoc(doc(db, kryssDoc.ref.path));
+                        alert(`Siste kryss til ${personMap[person]} har blitt fjernet!`);
+                    } else {
+                        alert(`Ingen kryss funnet for ${personMap[person]}.`);
+                    }
+                } catch (error) {
+                    console.error(`Error removing last kryss from ${personMap[person]}: `, error);
+                }
+            } else {
+                alert("Velg en person, dummy.");
+            }
+        });
 
 
     </script>
