@@ -249,3 +249,21 @@ tr:nth-child(odd) {
   background-color: #f1f1f1;
 }
 
+#adminContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+#adminContent .vertical-buttons, #assignments {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#adminContent select, #adminContent button {
+  margin: 5px 0;
+}
+
+

@@ -21,7 +21,7 @@
     </div>
     <h2 id="greeting"></h2>
     <div id="roomTasks"></div>
-    <button id="markAsDoneButton" style="display: none; margin: 0 auto; margin-top: 10px;">Klikk når du er ferdig!</button>
+    <button id="markAsDoneButton" style="display: none; margin: 0 auto; margin-top: 20px;">Klikk når du er ferdig!</button>
 
 </body>
 <script type="module">
@@ -55,7 +55,7 @@
                 greeting.textContent = `Velkommen til siden din, ${userData.fornavn}! Her er oppgavene dine for uka.`;
 
                 // Fetch the room assigned to the user
-                const roomQuery = await getDocs(collection(db, 'vaskeliste'), where('assignedTo', '==', user.email));
+                const roomQuery = await getDocs(collection(db, 'vaskeliste'), where('assignedTo', '==', user.fornavn));
                 console.log(roomQuery)
                 if (!roomQuery.empty) {
                     const roomDoc = roomQuery.docs[0];
@@ -88,7 +88,7 @@
     function displayRoomTasks(roomData, roomPath) {
         console.log(roomData)
         const roomName = roomMap[roomPath.split('/')[1]];
-        roomTasksDiv.innerHTML = `<h2>Tildelt rom for uka: ${roomName}</h2>`;
+        roomTasksDiv.innerHTML = `<h2>Ditt tildelte rom for uka: ${roomName}</h2>`;
         roomTasksDiv.innerHTML += '<ul>';
         roomData.tasks.forEach(task => {
             roomTasksDiv.innerHTML += `<li>${task}</li>`;
@@ -99,7 +99,7 @@
     async function markRoomAsDone(roomId) {
         try {
             await updateDoc(doc(db, 'vaskeliste', roomId), { status: true });
-            alert('Rom markert som fullført!');
+            alert('Rom markert som fullført! Thank you for your service😍!');
         } catch (error) {
             console.error("Error marking room as done: ", error);
         }

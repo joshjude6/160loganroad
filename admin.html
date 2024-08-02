@@ -32,139 +32,80 @@
                 <option value="philipSitater">Philip</option>
             </select>
             <button id="deletePersonQuotes">Fjern personens sitater</button>
+        </div>
         <h2>Innstillinger for vaskeliste</h2>
         <div id="assignments">
             <select id="usersDropdown"></select>
             <select id="roomsDropdown"></select>
-            <button id="assignButton">Assign Room</button>
+            <button id="assignButton">Tildel rom</button>
         </div>
+        <button id="resetRooms" style="margin: auto;">Reset status til alle rom</button>
     </div>
     <p id="loadingMessage">Sjekker om du er admin eller prøver å snike deg inn...</p>
 
-    
-</body>
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
-    import { getFirestore, collection, query, orderBy, getDocs, deleteDoc, doc, getDoc, updateDoc, setDoc, where } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+        import { getFirestore, collection, query, orderBy, getDocs, deleteDoc, doc, getDoc, updateDoc, setDoc, where } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyA_PRc6DM_i3X5lar_vcRtQyr1YVDRNq_o",
-        authDomain: "logan-road.firebaseapp.com",
-        databaseURL: "https://logan-road-default-rtdb.europe-west1.firebasedatabase.app",
-        projectId: "logan-road",
-        storageBucket: "logan-road.appspot.com",
-        messagingSenderId: "659456402188",
-        appId: "1:659456402188:web:1c77d675d130038141df29",
-        measurementId: "G-LHYYB4FNXF"
-    };
-    
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth();
-    const db = getFirestore(app);
+        const firebaseConfig = {
+            apiKey: "AIzaSyA_PRc6DM_i3X5lar_vcRtQyr1YVDRNq_o",
+            authDomain: "logan-road.firebaseapp.com",
+            databaseURL: "https://logan-road-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "logan-road",
+            storageBucket: "logan-road.appspot.com",
+            messagingSenderId: "659456402188",
+            appId: "1:659456402188:web:1c77d675d130038141df29",
+            measurementId: "G-LHYYB4FNXF"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth();
+        const db = getFirestore(app);
 
-    const personMap = {
-        peterSitater: "Peter",
-        joshSitater: "Josh",
-        philipSitater: "Philip"
-    };
-// sjekker admin-status
-    onAuthStateChanged(auth, async (user) => {
-        if (user) {
-            const userDoc = await getDoc(doc(db, 'users', user.uid));
-            if (userDoc.exists()) {
-                const userData = userDoc.data();
-                if (userData.isAdmin) {
-                    document.getElementById('loadingMessage').style.display = 'none';
-                    document.getElementById('adminContent').style.display = 'block';
+        const personMap = {
+            peterSitater: "Peter",
+            joshSitater: "Josh",
+            philipSitater: "Philip"
+        };
+        const roomMap = {
+            bathroom: "Badet",
+            kitchen: "Kjøkkenet", 
+            livingRoom: "Stua"
+        };
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const userDoc = await getDoc(doc(db, 'users', user.uid));
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    if (userData.isAdmin) {
+                        document.getElementById('loadingMessage').style.display = 'none';
+                        document.getElementById('adminContent').style.display = 'block';
+                        populateDropdowns();
+                    } else {
+                        alert("Gå vekk😍, send en pull request dersom noe må endres 🙏");
+                        window.location.href = 'user.html';
+                    }
                 } else {
-                    alert("Gå vekk😍, send en pull request dersom noe må endres 🙏")
-                    window.location.href = 'user.html';
+                    console.log("No such document!");
+                    window.location.href = 'login.html'; 
                 }
             } else {
-                console.log("No such document!");
+                alert("Logg inn først, jeg brukte lang tid på å fikse det...");
                 window.location.href = 'login.html'; 
             }
-        } else {
-            alert("Logg inn først, jeg brukte lang tid på å fikse det...")
-            window.location.href = 'login.html'; 
-        }
-    });
+        });
 
-//good 
-    document.getElementById("removeLastQuote").addEventListener('click', async function() {
-        try {
-            let lastQuoteDoc = null;
-            const persons = Object.keys(personMap);
+        async function populateDropdowns() {
+            const usersDropdown = document.getElementById('usersDropdown');
+            const roomsDropdown = document.getElementById('roomsDropdown');
 
-            for (const person of persons) {
-                const q = query(collection(db, 'sitater', person, 'quotes'), orderBy('time', 'desc'));
-                const querySnapshot = await getDocs(q);
-                if (!querySnapshot.empty) {
-                    const firstDoc = querySnapshot.docs[0];
-                    if (!lastQuoteDoc || firstDoc.data().time.toDate() > lastQuoteDoc.data().time.toDate()) {
-                        lastQuoteDoc = firstDoc;
-                    }
-                }
-            }
-
-            if (lastQuoteDoc) {
-                await deleteDoc(doc(db, lastQuoteDoc.ref.path));
-                alert("Siste sitat fjernet!");
-            } else {
-                alert("Ingen sitater å fjerne.");
-            }
-        } catch (error) {
-            console.error("Error removing last quote: ", error);
-        }
-    });
-//good
-    document.getElementById("deleteAllQuotes").addEventListener('click', async function() {
-        try {
-            const persons = Object.keys(personMap);
-
-            for (const person of persons) {
-                const q = query(collection(db, 'sitater', person, 'quotes'));
-                const querySnapshot = await getDocs(q);
-                querySnapshot.forEach(async (doc) => {
-                    await deleteDoc(doc.ref);
-                });
-            }
-            alert("Alle sitater slettet!");
-        } catch (error) {
-            console.error("Error deleting all quotes: ", error);
-        }
-    });
-//good
-    document.getElementById("deletePersonQuotes").addEventListener('click', async function() {
-        const person = document.getElementById("personDropdown").value;
-        if (person) {
-            try {
-                const q = query(collection(db, 'sitater', person, 'quotes'));
-                const querySnapshot = await getDocs(q);
-                querySnapshot.forEach(async (doc) => {
-                    await deleteDoc(doc.ref);
-                });
-                alert(`Alle sitatene til ${personMap[person]} har blitt slettet!`);
-            } catch (error) {
-                console.error(`Error deleting quotes from ${personMap[person]}: `, error);
-            }
-        } else {
-            alert("Velg en person, dummy.");
-        }
-    
-    });
-    const usersDropdown = document.getElementById('usersDropdown');
-    const roomsDropdown = document.getElementById('roomsDropdown');
-    const assignButton = document.getElementById('assignButton');
-
-    onAuthStateChanged(auth, async (user) => {
-        if (user) {
             const usersSnapshot = await getDocs(collection(db, 'users'));
             usersSnapshot.forEach(userDoc => {
                 const userData = userDoc.data();
                 const option = document.createElement('option');
-                option.value = userData.email;
+                option.value = userData.fornavn;
                 option.textContent = userData.fornavn;
                 usersDropdown.appendChild(option);
             });
@@ -174,27 +115,94 @@
                 const roomData = roomDoc.data();
                 const option = document.createElement('option');
                 option.value = roomDoc.id;
-                option.textContent = roomDoc.id;
+                option.textContent = roomMap[roomDoc.id];
                 roomsDropdown.appendChild(option);
             });
-        } else {
-            alert("Please log in first.");
-            window.location.href = 'login.html'; 
         }
-    });
 
-    assignButton.onclick = async () => {
-        const selectedUser = usersDropdown.value;
-        const selectedRoom = roomsDropdown.value;
+        document.getElementById("removeLastQuote").addEventListener('click', async function() {
+            try {
+                let lastQuoteDoc = null;
+                const persons = Object.keys(personMap);
 
-        const userDoc = await getDocs(collection(db, 'users'), where('email', '==', selectedUser));
-        const userId = userDoc.docs[0].id;
+                for (const person of persons) {
+                    const q = query(collection(db, 'sitater', person, 'quotes'), orderBy('time', 'desc'));
+                    const querySnapshot = await getDocs(q);
+                    if (!querySnapshot.empty) {
+                        const firstDoc = querySnapshot.docs[0];
+                        if (!lastQuoteDoc || firstDoc.data().time.toDate() > lastQuoteDoc.data().time.toDate()) {
+                            lastQuoteDoc = firstDoc;
+                        }
+                    }
+                }
 
-        await updateDoc(doc(db, 'vaskeliste', selectedRoom), { assignedTo: selectedUser });
-        await updateDoc(doc(db, 'users', userId), { assignedRoom: selectedRoom });
+                if (lastQuoteDoc) {
+                    await deleteDoc(doc(db, lastQuoteDoc.ref.path));
+                    alert("Siste sitat fjernet!");
+                } else {
+                    alert("Ingen sitater å fjerne.");
+                }
+            } catch (error) {
+                console.error("Error removing last quote: ", error);
+            }
+        });
 
-        alert('Room assigned successfully!');
-    }
+        document.getElementById("deleteAllQuotes").addEventListener('click', async function() {
+            try {
+                const persons = Object.keys(personMap);
 
-</script>
+                for (const person of persons) {
+                    const q = query(collection(db, 'sitater', person, 'quotes'));
+                    const querySnapshot = await getDocs(q);
+                    querySnapshot.forEach(async (doc) => {
+                        await deleteDoc(doc.ref);
+                    });
+                }
+                alert("Alle sitater slettet!");
+            } catch (error) {
+                console.error("Error deleting all quotes: ", error);
+            }
+        });
+
+        document.getElementById("deletePersonQuotes").addEventListener('click', async function() {
+            const person = document.getElementById("personDropdown").value;
+            if (person) {
+                try {
+                    const q = query(collection(db, 'sitater', person, 'quotes'));
+                    const querySnapshot = await getDocs(q);
+                    querySnapshot.forEach(async (doc) => {
+                        await deleteDoc(doc.ref);
+                    });
+                    alert(`Alle sitatene til ${personMap[person]} har blitt slettet!`);
+                } catch (error) {
+                    console.error(`Error deleting quotes from ${personMap[person]}: `, error);
+                }
+            } else {
+                alert("Velg en person, dummy.");
+            }
+        });
+
+        document.getElementById('assignButton').onclick = async () => {
+            const selectedUser = document.getElementById('usersDropdown').value;
+            const selectedRoom = document.getElementById('roomsDropdown').value;
+
+            const userDoc = await getDocs(collection(db, 'users'), where('fornavn', '==', selectedUser));
+            const userId = userDoc.docs[0].id;
+
+            await updateDoc(doc(db, 'vaskeliste', selectedRoom), { assignedTo: selectedUser });
+            await updateDoc(doc(db, 'users', userId), { assignedRoom: selectedRoom });
+
+            alert('Rommet har blitt tildelt en person!');
+        }
+        document.getElementById('resetRooms').onclick = async () => {
+            const roomsSnapshot = await getDocs(collection(db, 'vaskeliste'));
+            roomsSnapshot.forEach(async (roomDoc) => {
+                await updateDoc(doc(db, 'vaskeliste', roomDoc.id), { status: false });
+            });
+            alert('Alle rom er dirty igjen :D!');
+        }
+
+
+    </script>
+</body>
 </html>
