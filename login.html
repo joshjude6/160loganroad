@@ -44,7 +44,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
-    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, where } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
     const firebaseConfig = {
         apiKey: "AIzaSyA_PRc6DM_i3X5lar_vcRtQyr1YVDRNq_o",
         authDomain: "logan-road.firebaseapp.com",
@@ -94,7 +94,8 @@
                 etternavn: etternavn,
                 email: email,
                 isAdmin: false,
-                assignedRoom: "none"
+                assignedRoom: "none",
+                totalCrosses: 0
             });
             window.location.href = 'user.html'; // Redirect to user page on successful registration
         } catch (error) {
