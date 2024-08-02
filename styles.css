@@ -176,7 +176,7 @@ table {
   margin-top: 20px;
   margin: 20px auto;
   font-family: 'Helvetica';
-  background-color: #2a93d5;
+  background-color: #2a93d5; /* Background color for the table (header row) */
   color: white;
 }
 
@@ -187,17 +187,27 @@ table, th, td {
 th, td {
   padding: 10px;
   text-align: center;
-  background-color: #f2f2f2;
+}
+
+th {
+  background-color: #125488; /* Background color for header cells */
+  color: white;
+}
+
+tbody tr {
+  background-color: white; /* Background color for all rows */
   color: black;
 }
-tr:nth-child(even) {
-  background-color: white;
-  color: black;
+
+tbody tr:nth-child(even) {
+  background-color: #f2f2f2; /* Light gray for even rows, if desired */
 }
-tr:nth-child(odd) {
-  background-color: white;
-  color: black;
+
+tbody tr:hover {
+  background-color: #e0e0e0; /* Light gray for hover effect */
 }
+
+
 
 #chartContainer {
   width: 80%;
@@ -242,7 +252,7 @@ tr:nth-child(odd) {
 }
 
 #tipsTable tr:nth-child(even) {
-  background-color: #f9f9f9; /* Light gray for even rows */
+  background-color: #ffffff; /* Light gray for even rows */
 }
 
 #tipsTable tr:hover {
