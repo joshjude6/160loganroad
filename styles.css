@@ -15,6 +15,16 @@
   src: url('/fonter/Helvetica.ttf') format('opentype');
 }
 
+ul, li {
+  list-style-type: none; /* Remove default bullet points */
+  text-align: center;
+  margin: 0 auto; /* Center the list */
+  padding: 0; /* Remove default padding */
+  font-family: 'Helvetica';
+}
+
+
+
 h1 {
   font-size: 50px;
   text-align: center;

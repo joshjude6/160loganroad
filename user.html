@@ -21,7 +21,7 @@
     </div>
     <h2 id="greeting"></h2>
     <div id="roomTasks"></div>
-    <button id="markAsDoneButton" style="display: none;">Klikk når du er ferdig!</button>
+    <button id="markAsDoneButton" style="display: none; margin: 0 auto; margin-top: 10px;">Klikk når du er ferdig!</button>
 
 </body>
 <script type="module">
@@ -80,9 +80,9 @@
     });
 
     const roomMap = {
-        bathroom: "Bad",
-        kitchen: "Kjøkken", 
-        livingRoom: "Stue"
+        bathroom: "Badet",
+        kitchen: "Kjøkkenet", 
+        livingRoom: "Stua"
     }
 
     function displayRoomTasks(roomData, roomPath) {
