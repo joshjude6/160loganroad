@@ -269,12 +269,52 @@ tbody tr:hover {
 }
 
 .bingo {
-  width: 1366px;
-  height: 768px;
+  width: 90%;
+  max-width: 700px;
+  margin: 0 auto;
   display: grid;
   grid-template-rows: repeat(5, 1fr);
   grid-template-columns: repeat(5, 1fr);
   gap: 8px;
-  justify-content: center;
-  align-content: center;
 }
+
+.square {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background-color: #f2f2f2;
+  border: 2px solid #ccc;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  aspect-ratio: 1 / 1;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 400;
+  text-align: center;
+}
+
+.square:hover {
+  background-color: #e0e0e0;
+}
+
+#uploadModal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  border: 2px solid #ccc;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#uploadModal div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#uploadModal input {
+  margin-bottom: 10px;
+}
+

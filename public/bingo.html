@@ -22,32 +22,118 @@
         <a href="admin.html">Admin</a>
     </div>
     <h2>¡Australsk bingo!</h2>
-    <section class="bingo">
-        <div>1</div>
-        <div>2</div>
-        <div>3</div>
-        <div>4</div>
-        <div>5</div>
-        <div>6</div>
-        <div>7</div>
-        <div>8</div>
-        <div>9</div>
-        <div>10</div>
-        <div>11</div>
-        <div>12</div>
-        <div>13</div>
-        <div>14</div>
-        <div>15</div>
-        <div>16</div>
-        <div>17</div>
-        <div>18</div>
-        <div>19</div>
-        <div>20</div>
-        <div>21</div>
-        <div>22</div>
-        <div>23</div>
-        <div>24</div>
-        <div>25</div>
-    </section>
+    <div class="bingo"></div>
+    <div id="uploadModal" style="display:none;">
+        <div>
+            <h2>Last opp bilde av aktiviteten!</h2>
+            <input type="file" id="photoInput">
+            <button onclick="uploadPhoto()">Last opp</button>
+            <button onclick="closeModal()">Avbryt</button>
+        </div>
+    </div>
 </body>
+<script type="module">
+    // Import necessary Firebase libraries
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+    import { getFirestore, collection, doc, getDoc, updateDoc, setDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-storage.js";
+
+    // Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyA_PRc6DM_i3X5lar_vcRtQyr1YVDRNq_o",
+        authDomain: "logan-road.firebaseapp.com",
+        databaseURL: "https://logan-road-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "logan-road",
+        storageBucket: "logan-road.appspot.com",
+        messagingSenderId: "659456402188",
+        appId: "1:659456402188:web:1c77d675d130038141df29",
+        measurementId: "G-LHYYB4FNXF"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+    const auth = getAuth(app);
+    const bingoContainer = document.querySelector('.bingo');
+    const uploadModal = document.getElementById('uploadModal');
+    const photoInput = document.getElementById('photoInput');
+    let currentSquare = null;
+
+    // Fetch bingo data from Firestore
+    async function fetchBingoData() {
+        const bingoQuery = collection(db, 'bingo');
+        const bingoSnapshot = await getDocs(bingoQuery);
+        const bingoData = bingoSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        displayBingoGrid(bingoData);
+    }
+
+    // Display the bingo grid
+    function displayBingoGrid(bingoData) {
+        bingoContainer.innerHTML = '';
+        bingoData.forEach((square, index) => {
+            const squareElement = document.createElement('div');
+            squareElement.classList.add('square');
+            squareElement.textContent = square.activity;
+            squareElement.style.textDecoration = square.completed ? 'line-through' : 'none';
+            squareElement.addEventListener('click', () => handleSquareClick(square));
+            bingoContainer.appendChild(squareElement);
+        });
+    }
+
+    // Handle square click
+    function handleSquareClick(square) {
+        if (confirm(`Skal "${square.activity}" markeres som ferdig?`)) {
+            currentSquare = square;
+            uploadModal.style.display = 'block';
+        }
+    }
+
+    // Upload photo to Firebase Storage
+    async function uploadPhoto() {
+        const file = photoInput.files[0];
+        if (!file) return;
+
+        const storageRef = ref(storage, `bingo/${currentSquare.id}/${file.name}`);
+        await uploadBytes(storageRef, file);
+        const photoURL = await getDownloadURL(storageRef);
+
+        await updateDoc(doc(db, 'bingo', currentSquare.id), {
+            completed: true,
+            photoURL: photoURL
+        });
+
+        uploadModal.style.display = 'none';
+        fetchBingoData();
+    }
+
+    // Close modal
+    function closeModal() {
+        uploadModal.style.display = 'none';
+    }
+    // Function to initialize the bingo collection
+    async function initializeBingoCollection() {
+        const bingoCollection = collection(db, 'bingo');
+        const bingoSnapshot = await getDocs(bingoCollection);
+
+        if (bingoSnapshot.empty) {
+            for (let i = 0; i < 25; i++) {
+                const squareDoc = doc(bingoCollection, `square_${i + 1}`);
+                await setDoc(squareDoc, {
+                    activity: `Square ${i + 1}`,
+                    completed: false
+                });
+            }
+            console.log('Bingo collection initialized.');
+        } else {
+            console.log('Bingo collection already exists.');
+        }
+    }
+
+    // Call the function to initialize the collection
+    initializeBingoCollection().then(() => fetchBingoData());
+
+</script>
 </html>
