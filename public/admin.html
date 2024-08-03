@@ -27,6 +27,12 @@
     </div>
     <div id="adminContent" style="display: none">
         <h2>Heihei, admin!</h2>
+        <h2>Innstillinger for hjemmeside</h2>
+        <div class="vertical-buttons">
+            <input type="text" id="newEvent" placeholder="Skriv ny event her">
+            <button id="addEventButton">Legg til event</button>
+            <button id="removeOldestEventButton">Fjern eldste event</button>
+        </div>
         <h2>Innstillinger for sitater</h2>
         <div class="vertical-buttons">
             <button id="removeLastQuote">Fjern siste sitat</button>
@@ -61,7 +67,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
-        import { getFirestore, collection, query, orderBy, getDocs, deleteDoc, doc, getDoc, updateDoc, setDoc, where } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+        import { getFirestore, collection, query, orderBy, getDocs, deleteDoc, doc, getDoc, updateDoc, setDoc, where, addDoc, limit } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
 
         const firebaseConfig = {
@@ -238,6 +244,40 @@
                 }
             } else {
                 alert("Velg en person, dummy.");
+            }
+        });
+
+        document.getElementById("addEventButton").addEventListener('click', async function() {
+            const newEvent = document.getElementById("newEvent").value;
+            if (newEvent) {
+                try {
+                    const eventDocRef = await addDoc(collection(db, 'events'), {
+                        event: newEvent,
+                        time: new Date()
+                    });
+                    alert("Ny hendelse lagt til!");
+                    document.getElementById("newEvent").value = "";  // Clear the input field
+                } catch (error) {
+                    console.error("Error adding event: ", error);
+                }
+            } else {
+                alert("Skriv inn en hendelse.");
+            }
+        });
+
+        document.getElementById("removeOldestEventButton").addEventListener('click', async function() {
+            try {
+                const q = query(collection(db, 'events'), orderBy("time", "asc"), limit(1));
+                const querySnapshot = await getDocs(q);
+                if (!querySnapshot.empty) {
+                    const oldestEventDoc = querySnapshot.docs[0];
+                    await deleteDoc(doc(db, 'events', oldestEventDoc.id));
+                    alert("Eldste hendelse fjernet!");
+                } else {
+                    alert("Ingen hendelser å fjerne.");
+                }
+            } catch (error) {
+                console.error("Error removing oldest event: ", error);
             }
         });
 

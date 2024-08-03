@@ -24,14 +24,16 @@
         <a href="admin.html">Admin</a>
     </div>
     <h2>Hvad der hender...</h2>
-    <p>9 - 11. august: Byron Bay med ANSA</p>
+    <div id="events">
+        <p>9 - 11. august: Byron Bay med ANSA</p>
+    </div>
     <h2>Invitasjoner</h2>
     <div id="invitations">
         <li id="invitationOne"></li>
         <li id="invitationTwo"></li>
         <li id="invitationThree"></li>
     </div>
-    <h2>Countdown til Seoul😍🇰🇷!!</h2>
+    <h2>Countdown til Seoul😍🇰🇷!!!</h2>
     <p>Vi skal til 서울 og bli fucked up på soju og KBBQ om:</p>
     <p id="seoul"></p>
     <p style=" position: absolute; bottom: 0; left: 0; width: 100%; text-align: center; font-size: 12px;">Denne nettsiden var made with love, og kanskje litt KI, av Josh :D</p>
@@ -111,5 +113,26 @@
         }}, 1000);
     }
     countDownTimer();
+    async function fetchLastThreeEvents() {
+    const eventsDiv = document.getElementById("events");
+    eventsDiv.innerHTML = ""; // Clear current events
+
+    try {
+        const q = query(collection(db, 'events'), orderBy("time", "desc"), limit(3));
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            const eventParagraph = document.createElement("p");
+            eventParagraph.textContent = data.event;
+            eventsDiv.appendChild(eventParagraph);
+        });
+    } catch (error) {
+        console.error("Error fetching events: ", error);
+    }
+    }
+
+// Call the function to fetch and display the last three events
+fetchLastThreeEvents();
+
 </script>
 </html>
