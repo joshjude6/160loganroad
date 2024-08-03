@@ -1,53 +1,7 @@
 @font-face {
-  font-family: 'Neue Machina Regular';
-  src: url('/fonter/NeueMachina-Regular.otf') format('opentype'); /* Adjust the path to the font file */
-}
-@font-face {
-  font-family: 'Neue Machina Ultrabold';
-  src: url('/fonter/NeueMachina-Ultrabold.otf') format('opentype'); /* Adjust the path to the font file */
-}
-@font-face {
-  font-family: 'Neue Machina Light';
-  src: url('/fonter/NeueMachina-Light.otf') format('opentype'); /* Adjust the path to the font file */
-}
-@font-face {
-  font-family: 'Helvetica';
-  src: url('/fonter/Helvetica.ttf') format('opentype');
-}
-@font-face {
   font-family: 'ShadowHand';
-  src: url('/fonter/ShadowHand.ttf') format('opentype');
+  src: url('//2ttf.com/webfont/UIswCwhB/webfont.ttf') format('truetype');
 }
-@font-face {
-  font-family: 'Monaspace';
-  src: url('/fonter/MonaspaceNeon-Regular.otf') format('opentype');
-}
-
-@font-face {
-  font-family: 'ArchivGrotesk-Bold';
-  src: url('/fonter/ArchivGrotesk-Bold.otf') format('opentype');
-}
-@font-face {
-  font-family: 'ArchivGrotesk-Hairline';
-  src: url('/fonter/ArchivGrotesk-Hairline.otf') format('opentype');
-}
-@font-face {
-  font-family: 'ArchivGrotesk-Light';
-  src: url('/fonter/ArchivGrotesk-Light.otf') format('opentype');
-}
-@font-face {
-  font-family: 'ArchivGrotesk-Normal';
-  src: url('/fonter/ArchivGrotesk-Normal.otf') format('opentype');
-}
-@font-face {
-  font-family: 'ArchivGrotesk-Regular';
-  src: url('/fonter/ArchivGrotesk-Regular.otf') format('opentype');
-}
-@font-face {
-  font-family: 'ArchivGrotesk-SemiBold';
-  src: url('/fonter/ArchivGrotesk-SemiBold.otf') format('opentype');
-}
-
 
 
 ul, li {
@@ -55,10 +9,9 @@ ul, li {
   text-align: center;
   margin: 0 auto; /* Center the list */
   padding: 0; /* Remove default padding */
-  font-family: 'ArchivGrotesk-Normal';
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 400; /* Equivalent to ArchivGrotesk-Normal */
 }
-
-
 
 h1 {
   font-size: 50px;
@@ -66,13 +19,17 @@ h1 {
   font-family: 'ShadowHand';
   color: black;
 }
+
 h2 {
   font-size: 25px;
-  font-family: 'ArchivGrotesk-Bold';
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700; /* Equivalent to ArchivGrotesk-Bold */
   text-align: center;
 }
+
 p {
-  font-family: 'ArchivGrotesk-Normal';
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 400; /* Equivalent to ArchivGrotesk-Normal */
   text-align: center;
   font-size: 20px;
 }
@@ -84,7 +41,8 @@ p {
 }
 
 .topnav a {
-  font-family: 'ArchivGrotesk-SemiBold';
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600; /* Equivalent to ArchivGrotesk-SemiBold */
   font-size: 20px;
   display: inline-block;
   text-align: center;
@@ -123,7 +81,8 @@ p {
 button {
   padding: 10px 15px;
   font-size: 18px;
-  font-family: 'ArchivGrotesk-Normal';
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 400; /* Equivalent to ArchivGrotesk-Normal */
   cursor: pointer;
   background-color: #125488;
   color: white;
@@ -137,7 +96,6 @@ button {
   display: flex;
   flex-direction: column;
   align-items: center;
-
 }
 
 .vertical-buttons button,
@@ -158,7 +116,6 @@ button {
   align-items: center;
   margin: 5 auto;
 }
-
 
 button:hover {
   background-color: #2a93d5;
@@ -210,7 +167,8 @@ table {
   width: 90%;
   margin-top: 20px;
   margin: 20px auto;
-  font-family: 'ArchivGrotesk-Normal';
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 400; /* Equivalent to ArchivGrotesk-Normal */
   background-color: #2a93d5; /* Background color for the table (header row) */
   color: white;
 }
@@ -242,8 +200,6 @@ tbody tr:hover {
   background-color: #e0e0e0; /* Light gray for hover effect */
 }
 
-
-
 #chartContainer {
   width: 80%;
   margin-top: 20px;
@@ -252,7 +208,8 @@ tbody tr:hover {
 }
 
 .entriesList {
-  font-family: 'ArchivGrotesk-Normal';
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 400; /* Equivalent to ArchivGrotesk-Normal */
   text-align: 18px;
 }
 
@@ -314,14 +271,10 @@ tbody tr:hover {
 .bingo {
   width: 1366px;
   height: 768px;
-
   display: grid;
   grid-template-rows: repeat(5, 1fr);
   grid-template-columns: repeat(5, 1fr);
   gap: 8px;
-
   justify-content: center;
   align-content: center;
 }
-
-
