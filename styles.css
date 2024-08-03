@@ -14,13 +14,48 @@
   font-family: 'Helvetica';
   src: url('/fonter/Helvetica.ttf') format('opentype');
 }
+@font-face {
+  font-family: 'ShadowHand';
+  src: url('/fonter/ShadowHand.ttf') format('opentype');
+}
+@font-face {
+  font-family: 'Monaspace';
+  src: url('/fonter/MonaspaceNeon-Regular.otf') format('opentype');
+}
+
+@font-face {
+  font-family: 'ArchivGrotesk-Bold';
+  src: url('/fonter/ArchivGrotesk-Bold.otf') format('opentype');
+}
+@font-face {
+  font-family: 'ArchivGrotesk-Hairline';
+  src: url('/fonter/ArchivGrotesk-Hairline.otf') format('opentype');
+}
+@font-face {
+  font-family: 'ArchivGrotesk-Light';
+  src: url('/fonter/ArchivGrotesk-Light.otf') format('opentype');
+}
+@font-face {
+  font-family: 'ArchivGrotesk-Normal';
+  src: url('/fonter/ArchivGrotesk-Normal.otf') format('opentype');
+}
+@font-face {
+  font-family: 'ArchivGrotesk-Regular';
+  src: url('/fonter/ArchivGrotesk-Regular.otf') format('opentype');
+}
+@font-face {
+  font-family: 'ArchivGrotesk-SemiBold';
+  src: url('/fonter/ArchivGrotesk-SemiBold.otf') format('opentype');
+}
+
+
 
 ul, li {
   list-style-type: none; /* Remove default bullet points */
   text-align: center;
   margin: 0 auto; /* Center the list */
   padding: 0; /* Remove default padding */
-  font-family: 'Helvetica';
+  font-family: 'ArchivGrotesk-Normal';
 }
 
 
@@ -28,16 +63,16 @@ ul, li {
 h1 {
   font-size: 50px;
   text-align: center;
-  font-family: 'Helvetica';
+  font-family: 'ShadowHand';
   color: black;
 }
 h2 {
   font-size: 25px;
-  font-family: 'Helvetica';
+  font-family: 'ArchivGrotesk-Bold';
   text-align: center;
 }
 p {
-  font-family: 'Helvetica';
+  font-family: 'ArchivGrotesk-Normal';
   text-align: center;
   font-size: 20px;
 }
@@ -49,7 +84,7 @@ p {
 }
 
 .topnav a {
-  font-family: 'Helvetica';
+  font-family: 'ArchivGrotesk-SemiBold';
   font-size: 20px;
   display: inline-block;
   text-align: center;
@@ -88,7 +123,7 @@ p {
 button {
   padding: 10px 15px;
   font-size: 18px;
-  font-family: 'Helvetica';
+  font-family: 'ArchivGrotesk-Normal';
   cursor: pointer;
   background-color: #125488;
   color: white;
@@ -175,7 +210,7 @@ table {
   width: 90%;
   margin-top: 20px;
   margin: 20px auto;
-  font-family: 'Helvetica';
+  font-family: 'ArchivGrotesk-Normal';
   background-color: #2a93d5; /* Background color for the table (header row) */
   color: white;
 }
@@ -217,7 +252,7 @@ tbody tr:hover {
 }
 
 .entriesList {
-  font-family: 'Helvetica';
+  font-family: 'ArchivGrotesk-Normal';
   text-align: 18px;
 }
 
@@ -274,6 +309,19 @@ tbody tr:hover {
 
 #adminContent select, #adminContent button {
   margin: 5px 0;
+}
+
+.bingo {
+  width: 1366px;
+  height: 768px;
+
+  display: grid;
+  grid-template-rows: repeat(5, 1fr);
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+
+  justify-content: center;
+  align-content: center;
 }
 
 
