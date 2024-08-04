@@ -81,44 +81,61 @@
     
         let chartInstance = null;
     
-        document.getElementById("submitBtn").addEventListener('click', async function() {
-        const name = document.getElementById("inputName").value;
-        const reason = document.getElementById("hvorfor").value;
-        const crosses = document.getElementById("antallKryss").value;
-        const reporter = document.getElementById("hvemMeldte").value;
+    document.getElementById("submitBtn").addEventListener('click', async function() {
+    const name = document.getElementById("inputName").value;
+    const reason = document.getElementById("hvorfor").value;
+    const crosses = document.getElementById("antallKryss").value;
+    const reporter = document.getElementById("hvemMeldte").value;
 
-        if (name && reason && crosses && reporter) {
-            try {
-                console.log("Adding document to Firestore");
-                const nameLowerCase = name.toLowerCase();
-                const docRef = await addDoc(collection(db, 'kryss', nameLowerCase + 'Kryss', 'entries'), {
-                    name: name,
-                    reason: reason,
-                    crosses: Number(crosses),
-                    reporter: reporter,
-                    time: serverTimestamp()
+    if (name && reason && crosses && reporter) {
+        try {
+            console.log("Adding document to Firestore");
+            const nameLowerCase = name.toLowerCase();
+            const docRef = await addDoc(collection(db, 'kryss', nameLowerCase + 'Kryss', 'entries'), {
+                name: name,
+                reason: reason,
+                crosses: Number(crosses),
+                reporter: reporter,
+                time: serverTimestamp()
+            });
+            console.log("Document added with ID: ", docRef.id);
+
+            // Query the user with the correct first name
+            const userQuery = query(collection(db, 'users'), where('fornavn', '==', name));
+            const userSnapshot = await getDocs(userQuery);
+
+            if (!userSnapshot.empty) {
+                // Find the user with the exact first name match
+                let userDoc;
+                userSnapshot.forEach(doc => {
+                    if (doc.data().fornavn === name) {
+                        userDoc = doc;
+                    }
                 });
-                console.log("Document added with ID: ", docRef.id);
 
-                // Update the totalCrosses field in the user's document
-                const userQuery = await getDocs(collection(db, 'users'), where('fornavn', '==', name));
-                if (!userQuery.empty) {
-                    const userDoc = userQuery.docs[0];
+                if (userDoc) {
                     const userData = userDoc.data();
                     const newTotalCrosses = (userData.totalCrosses || 0) + Number(crosses);
                     await updateDoc(doc(db, 'users', userDoc.id), { totalCrosses: newTotalCrosses });
-                    console.log("Crosses updated")
+                    console.log("Crosses updated for user ID: ", userDoc.id);
+                } else {
+                    console.error("No user found with the exact first name match.");
                 }
-
-                alert("Kryss meldt!");
-                displayEntries();
-            } catch (error) {
-                console.error("Error reporting crosses: ", error);
+            } else {
+                console.error("No user found with the given first name.");
             }
-        } else {
-            alert("Fyll ut alle feltene 😡");
+
+            alert("Kryss meldt!");
+            displayEntries();
+        } catch (error) {
+            console.error("Error reporting crosses: ", error);
         }
+    } else {
+        alert("Fyll ut alle feltene 😡");
+    }
     });
+
+
 
     
         async function displayEntries() {
