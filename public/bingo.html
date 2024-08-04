@@ -78,7 +78,7 @@
             const squareElement = document.createElement('div');
             squareElement.classList.add('square');
             squareElement.textContent = square.activity;
-            squareElement.style.textDecoration = square.completed ? 'line-through' : 'none';
+            //squareElement.style.textDecoration = square.completed ? 'line-through' : 'none';
             squareElement.style.backgroundColor = square.completed ? '#26a65b' : '#f2f2f2';
             squareElement.addEventListener('click', () => handleSquareClick(square));
             bingoContainer.appendChild(squareElement);
@@ -87,10 +87,15 @@
 
     // Handle square click
     function handleSquareClick(square) {
-        if (confirm(`Skal "${square.activity}" markeres som ferdig?`)) {
+        if(!square.completed){
+            if (confirm(`Skal "${square.activity}" markeres som ferdig?`)) {
             currentSquare = square;
             uploadModal.style.display = 'block';
         }
+        } else {
+            alert("Allerede merket som ferdig! Kontakt admin for fix!");
+        }
+        
     }
     document.getElementById("uploadPhotos").addEventListener('click', async function() {
         const file = photoInput.files[0];
