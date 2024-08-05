@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 72 72'><text y='50' font-size='50'>🇦🇺</text></svg>">
 </head>
 
 <body>
@@ -36,6 +37,8 @@
     <h2>Countdown til Seoul😍🇰🇷!!!</h2>
     <p>Vi skal til 서울 og bli fucked up på soju og KBBQ om:</p>
     <p id="seoul"></p>
+    <h2>Countdown til Peter kommer og kollektivet er samlet😍:</h2>
+    <p id="peterCounter"></p>
     <p style=" position: absolute; bottom: 0; left: 0; width: 100%; text-align: center; font-size: 12px;">Denne nettsiden var made with love, og kanskje litt KI, av Josh :D</p>
 </body>
 <script type="module">
@@ -112,7 +115,26 @@
             document.getElementById("seoul").innerHTML = "갑시다!😍";
         }}, 1000);
     }
+    function peterTimer(){
+        var countDownDate = new Date("Aug 05, 2024 23:45:00").getTime();
+        var x = setInterval(function() {
+        var now = new Date().getTime();
+        var distance = countDownDate - now;
+
+        var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        document.getElementById("peterCounter").innerHTML = days + " dager, " + hours + " timer, " + minutes + " minutter, og " + seconds + " sekunder! ";
+
+        if (distance < 0) {
+            clearInterval(x);
+            document.getElementById("peterCounter").innerHTML = "Velkommen til Brisbane, Peter!😍";
+        }}, 1000);
+    }
     countDownTimer();
+    peterTimer();
     async function fetchLastThreeEvents() {
     const eventsDiv = document.getElementById("events");
     eventsDiv.innerHTML = ""; // Clear current events

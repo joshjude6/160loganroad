@@ -8,6 +8,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 72 72'><text y='50' font-size='50'>🇦🇺</text></svg>">
+</head>
 </head>
 <body>
     <h1>1603, 160 Logan Road</h1> 
@@ -100,20 +102,10 @@
     document.getElementById("uploadPhotos").addEventListener('click', async function() {
         const file = photoInput.files[0];
         if (!file) return;
-
-        // Get the activity name from currentSquare
         const activityName = currentSquare.activity;
-
-        // Create a reference to the storage location with activity name
         const storageRef = ref(storage, `bingo/${activityName}/${file.name}`);
-
-        // Upload the file
         await uploadBytes(storageRef, file);
-
-        // Get the download URL for the uploaded image
         const photoURL = await getDownloadURL(storageRef);
-
-        // Update the Firestore document with completed status and photoURL
         await updateDoc(doc(db, 'bingo', currentSquare.id), {
             completed: true,
             photoURL: photoURL
