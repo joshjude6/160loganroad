@@ -90,7 +90,7 @@
 
     // Handle square click
     function handleSquareClick(square) {
-        if(!square.completed){
+        if(!square.completed && auth.currentUser){
             if (confirm(`Skal "${square.activity}" markeres som ferdig?`)) {
             currentSquare = square;
             uploadModal.style.display = 'block';
