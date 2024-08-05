@@ -19,6 +19,7 @@
         <a href="index.html">Hjem</a>
         <a href="vaskeregler.html">Vasking</a>
         <a href="kryss.html">Kryss</a>
+        <a href="bingo.html">Bingo</a>
         <a href="sitater.html">Sitater</a>
         <a href="lardom.html">Australsk lærdom</a>
         <a href="guide.html">Skal du flytte hit?</a>
@@ -26,11 +27,11 @@
     </div>
     <div class="content">
         <div class="left">
-            <h2>Kollektivets stats🦅</h2>
+            <h2>🦘 Kollektivets stats 🦘</h2>
             <table id="userTable">
                 <thead>
                     <tr>
-                        <th>Fornavn</th>
+                        <th>Medlem</th>
                         <th>Kastet resirkulerbart ♻️</th>
                         <th>Kastet vanlig søppel 🚯</th>
                         <th>Tømt oppvaskmaskinen 🧽</th>
@@ -40,6 +41,9 @@
                     <!-- Data will be populated here -->
                 </tbody>
             </table>
+            <h2>♥️ ♣️ Siste fullførte bingoaktivitet ♠️ ♦️</h2>
+            <div id="image-container"></div>
+            <p id="imageTitle"></p>
         </div>
         <div class="right">
             <h2>Hvad der hender...</h2>
@@ -208,5 +212,35 @@ fetchLastThreeEvents();
         }
 
 fetchUserData();
+async function displayMostRecentImage() {
+      try {
+        const querySnapshot = await query(collection(db, 'bingo'), orderBy("time", "asc"));
+        const q = await getDocs(querySnapshot)
+        let mostRecentPhotoURL = '';
+        let photoActivity = '';
+        q.forEach((doc) => {
+          const data = doc.data();
+          if (data.time && data.photoURL) {
+            mostRecentPhotoURL = data.photoURL;
+            photoActivity = data.activity;
+            return false; // Exit the loop once the most recent valid entry is found
+          }
+        });
+
+        if (mostRecentPhotoURL) {
+          const imageContainer = document.getElementById('image-container');
+          const imageTitle = document.getElementById('imageTitle');
+          imageContainer.innerHTML = `<img src="${mostRecentPhotoURL}" alt="Nyligste bilde" style="width: 250px;">`;
+          imageTitle.innerHTML = `<p>Aktivitet: ${photoActivity}</p>`;
+        } else {
+          console.log('No valid entry with photoURL found.');
+        }
+      } catch (error) {
+        console.error('Error retrieving documents:', error);
+      }
+    }
+
+    // Call the function to display the image
+    displayMostRecentImage();
 </script>
 </html>

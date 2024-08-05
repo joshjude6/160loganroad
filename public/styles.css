@@ -14,7 +14,7 @@ ul, li {
 }
 
 h1 {
-  font-size: 50px;
+  font-size: 55px;
   text-align: center;
   font-family: 'ShadowHand';
   color: black;
@@ -61,6 +61,14 @@ p {
   flex-direction: column;
   align-items: center;
   margin-bottom: 20px;
+}
+
+#image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
 }
 
 .navnelapper {
