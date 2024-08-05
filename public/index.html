@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 72 72'><text y='50' font-size='50'>🇦🇺</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 72 72'><text y='50' font-size='75'>🇦🇺</text></svg>">
 </head>
 
 <body>
@@ -24,22 +24,42 @@
         <a href="guide.html">Skal du flytte hit?</a>
         <a href="admin.html">Admin</a>
     </div>
-    <h2>Hvad der hender...</h2>
-    <div id="events">
-        <p>9 - 11. august: Byron Bay med ANSA</p>
+    <div class="content">
+        <div class="left">
+            <h2>Kollektivets stats🦅</h2>
+            <table id="userTable">
+                <thead>
+                    <tr>
+                        <th>Fornavn</th>
+                        <th>Kastet resirkulerbart ♻️</th>
+                        <th>Kastet vanlig søppel 🚯</th>
+                        <th>Tømt oppvaskmaskinen 🧽</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data will be populated here -->
+                </tbody>
+            </table>
+        </div>
+        <div class="right">
+            <h2>Hvad der hender...</h2>
+            <div id="events">
+                <p>9 - 11. august: Byron Bay med ANSA</p>
+            </div>
+            <h2>Invitasjoner</h2>
+            <div id="invitations">
+                <li id="invitationOne"></li>
+                <li id="invitationTwo"></li>
+                <li id="invitationThree"></li>
+            </div>
+            <h2>Countdown til Seoul😍🇰🇷!!!</h2>
+            <p>Vi skal til 서울 og bli fucked up på soju og KBBQ om:</p>
+            <p id="seoul"></p>
+            <h2>Countdown til Peter kommer og kollektivet er samlet😍:</h2>
+            <p id="peterCounter"></p>
+        </div>
     </div>
-    <h2>Invitasjoner</h2>
-    <div id="invitations">
-        <li id="invitationOne"></li>
-        <li id="invitationTwo"></li>
-        <li id="invitationThree"></li>
-    </div>
-    <h2>Countdown til Seoul😍🇰🇷!!!</h2>
-    <p>Vi skal til 서울 og bli fucked up på soju og KBBQ om:</p>
-    <p id="seoul"></p>
-    <h2>Countdown til Peter kommer og kollektivet er samlet😍:</h2>
-    <p id="peterCounter"></p>
-    <p style=" position: absolute; bottom: 0; left: 0; width: 100%; text-align: center; font-size: 12px;">Denne nettsiden var made with love, og kanskje litt KI, av Josh :D</p>
+    <footer>Denne nettsiden var made with love, og kanskje litt KI, av Josh :D</footer>
 </body>
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
@@ -155,6 +175,38 @@
 
 // Call the function to fetch and display the last three events
 fetchLastThreeEvents();
+    async function fetchUserData() {
+            const userTableBody = document.getElementById("userTable").getElementsByTagName('tbody')[0];
 
+            try {
+                const querySnapshot = await getDocs(collection(db, 'users'));
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const row = document.createElement("tr");
+
+                    const fornavnCell = document.createElement("td");
+                    fornavnCell.textContent = data.fornavn;
+                    row.appendChild(fornavnCell);
+
+                    const recycleCountCell = document.createElement("td");
+                    recycleCountCell.textContent = data.recycleCount;
+                    row.appendChild(recycleCountCell);
+
+                    const wasteCountCell = document.createElement("td");
+                    wasteCountCell.textContent = data.wasteCount;
+                    row.appendChild(wasteCountCell);
+
+                    const dishCountCell = document.createElement("td");
+                    dishCountCell.textContent = data.dishCount;
+                    row.appendChild(dishCountCell);
+
+                    userTableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error("Error fetching user data: ", error);
+            }
+        }
+
+fetchUserData();
 </script>
 </html>

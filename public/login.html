@@ -93,15 +93,16 @@
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
-            
-            // Save user details in Firestore
             await setDoc(doc(db, 'users', user.uid), {
                 fornavn: fornavn,
                 etternavn: etternavn,
                 email: email,
                 isAdmin: false,
                 assignedRoom: "none",
-                totalCrosses: 0
+                totalCrosses: 0,
+                recycleCount: 0,
+                wasteCount: 0,
+                dishCount: 0
             });
             window.location.href = 'user.html'; // Redirect to user page on successful registration
         } catch (error) {

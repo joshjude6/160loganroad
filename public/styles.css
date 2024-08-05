@@ -43,7 +43,7 @@ p {
 .topnav a {
   font-family: 'Space Grotesk', sans-serif;
   font-weight: 600; /* Equivalent to ArchivGrotesk-SemiBold */
-  font-size: 20px;
+  font-size: 18px;
   display: inline-block;
   text-align: center;
   text-decoration: none;
@@ -160,6 +160,17 @@ button:hover {
 
 .input-bar select option[disabled] {
   color: #999;
+}
+
+.content {
+  display: flex;
+}
+
+footer {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 200;
+  text-align: center;
+  font-size: 10px;
 }
 
 table {
