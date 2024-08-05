@@ -1,52 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bruker</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 72 72'><text y='50' font-size='50'>🇦🇺</text></svg>">
-</head>
-<body>
-    <h1>1603, 160 Logan Road</h1> 
-    <div class="topnav">
-        <a href="login.html">Login</a>
-        <a href="user.html">Bruker</a>
-        <a href="index.html">Hjem</a>
-        <a href="vaskeregler.html">Vasking</a>
-        <a href="kryss.html">Kryss</a>
-        <a href="bingo.html">Bingo</a>
-        <a href="sitater.html">Sitater</a>
-        <a href="lardom.html">Australsk lærdom</a>
-        <a href="guide.html">Skal du flytte hit?</a>
-        <a href="admin.html">Admin</a>
-    </div>
-    <h2 id="greeting"></h2>
-    <div id="roomTasks"></div>
-    <button id="markAsDoneButton" style="display: none; margin: 0 auto; margin-top: 20px;">Klikk når du er ferdig!</button>
-    <h2 id="kryssMarker"></h2>
-    <div id="socialButtons" style="display: none;">
-        <h2>Registrer aktivitet:</h2>
-        <div class="vertical-buttons">
-            <button type="submit" id="recycleButton">Kastet resirkulerbart?</button>
-            <button type="submit" id="wasteButton">Kastet vanlig søppel?</button>
-            <button type="submit" id="dishButton">Tømt oppvaskmaskinen?</button>
-        </div>
-        <h2>Meld sosialt under!</h2>
-        <div class="vertical-buttons">
-            <input type="text" placeholder="Hva" id="what">
-            <input type="text" placeholder="Når" id="when">
-            <button type="submit" id="socialButton">Send inn!</button>
-        </div>
-    </div>
-</body>
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
-    import { getFirestore, doc, getDoc, updateDoc, getDocs, collection, where, addDoc, serverTimestamp, increment } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+import { getFirestore, doc, getDoc, updateDoc, getDocs, collection, where, addDoc, serverTimestamp, increment } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyA_PRc6DM_i3X5lar_vcRtQyr1YVDRNq_o",
@@ -91,7 +45,7 @@
                         });
                         console.log("Social event added with ID: ", docRef.id);
                         alert("Sendt inn sosial event!")
-                        //fetchLastThreeSubmissions();
+
                     } catch (error) {
                         console.error("Error reporting event: ", error);
                     }
@@ -99,7 +53,7 @@
                     alert("Fyll ut alle feltene 😡");
                 }
                 });
-                // Fetch the room assigned to the user
+ 
                 const roomQuery = await getDocs(collection(db, 'vaskeliste'), where('assignedTo', '==', user.fornavn));
                 console.log(roomQuery)
                 if (!roomQuery.empty) {
@@ -109,7 +63,7 @@
                     
                     displayRoomTasks(roomData, roomPath);
 
-                    // Show the "Mark as Done" button
+      
                     markAsDoneButton.style.display = 'block';
                     markAsDoneButton.onclick = () => markRoomAsDone(roomDoc.id);
                 } else {
@@ -150,7 +104,7 @@
         }
     }
 
-    // Function to update the count in Firestore
+
     async function updateCount(countType) {
     const user = auth.currentUser;
     if (user) {
@@ -168,9 +122,6 @@
         console.log('No user is signed in');
     }
     }
-
-
-    // Event listeners for buttons
     document.getElementById('recycleButton').addEventListener('click', () => {
       updateCount('recycleCount');
     });
@@ -182,8 +133,3 @@
     document.getElementById('dishButton').addEventListener('click', () => {
       updateCount('dishCount');
     });
-
-    
-
-</script>
-</html>
